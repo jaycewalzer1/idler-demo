@@ -15,7 +15,7 @@ from inspect_ai.tool import ToolCall
 
 from dealroom.domain import load_case, observe, reset, step
 from dealroom.score import evaluate
-from dealroom.task import dealroom, fixture_fingerprint
+from dealroom.task import case_for_record, dealroom, fixture_fingerprint
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_EXPORT = ROOT / "web" / "public" / "runs.json"
@@ -153,9 +153,11 @@ def action_label(action: dict | None, result: dict | None = None) -> str:
     return label
 
 
-def make_step(engine, index: int, action: dict | None, result=None) -> dict:
+def make_step(
+    engine, index: int, action: dict | None, result=None, *, end_on_expiry: bool = False
+) -> dict:
     data = dump(result) if result is not None else None
-    evaluation = dump(evaluate(engine))
+    evaluation = dump(evaluate(engine, end_on_expiry=end_on_expiry))
     checks = diagnostics(evaluation)
     public = snapshot(engine)
     if evaluation["success"]:
@@ -163,6 +165,12 @@ def make_step(engine, index: int, action: dict | None, result=None) -> dict:
             f"Authorized {public['disposition']} is recorded by the deadline. "
             f"Effective executed credit: ${public['effective_credit_cents'] / 100:,.2f}. "
             "Every hard constraint and structured final claim is supported."
+        )
+    elif end_on_expiry and public["disposition"] == "expired":
+        note = (
+            "Terminal reward is 0: the contractual deadline expired without an authorized "
+            "disposition. The episode ended on irreversible expiry; no finish call or final "
+            "claims were fabricated."
         )
     elif engine.finished:
         failed = [check["reason"] for check in checks if not check["passed"]]
@@ -258,17 +266,22 @@ def export_logs(paths: list[Path], output: Path) -> dict:
                     {"sample_id": str(sample.id), "status": problem[0], "reason": problem[1]}
                 )
                 continue
-            case = load_case(record["case_id"])
+            case = case_for_record(record)
             if record.get("fixture_sha256") != fixture_fingerprint(case):
                 raise ValueError(
                     f"Fixture has changed since this log was recorded: {path} sample {sample.id}"
                 )
             engine = reset(case)
-            steps = [make_step(engine, 0, None)]
+            end_on_expiry = (
+                record.get("end_on_expiry") is True
+                and record.get("termination_reason") == "contract_deadline_expired"
+            )
+            steps = [make_step(engine, 0, None, end_on_expiry=end_on_expiry)]
             for i, action in enumerate(record["actions"], 1):
                 result = step(engine, action)
-                steps.append(make_step(engine, i, action, result))
-            outcome = dump(evaluate(engine))
+                steps.append(make_step(engine, i, action, result, end_on_expiry=end_on_expiry))
+            outcome = dump(evaluate(engine, end_on_expiry=end_on_expiry))
+            terminal_expiry = end_on_expiry and engine.business_status == "expired"
             if outcome["outcome"] == "budget_exhausted":
                 counts["budget_exhaustions"] += 1
                 issues.append(
@@ -279,7 +292,7 @@ def export_logs(paths: list[Path], output: Path) -> dict:
                     }
                 )
                 continue
-            if not getattr(engine, "finished", False):
+            if not getattr(engine, "finished", False) and not terminal_expiry:
                 counts["incomplete"] += 1
                 issues.append(
                     {
@@ -290,7 +303,11 @@ def export_logs(paths: list[Path], output: Path) -> dict:
                 )
                 continue
             recorded = (sample.scores or {}).get("transaction_success")
-            if recorded is None or int(recorded.value) != int(outcome["success"]):
+            if (
+                recorded is None
+                or recorded.value not in (0, 1)
+                or recorded.value != int(outcome["success"])
+            ):
                 raise ValueError(
                     f"Replay score differs from canonical Inspect score: {path} sample {sample.id}"
                 )
@@ -345,9 +362,20 @@ def export_logs(paths: list[Path], output: Path) -> dict:
                     **({"paired_run_id": meta["paired_run_id"]} if "paired_run_id" in meta else {}),
                     "score": {"success": outcome["success"], "diagnostics": diagnostics(outcome)},
                     "steps": steps,
+                    **(
+                        {
+                            "episode": {
+                                "termination_reason": "contract_deadline_expired",
+                                "finished": engine.finished,
+                                "action_limit": case.action_limit,
+                            }
+                        }
+                        if terminal_expiry
+                        else {}
+                    ),
                     "task": task_details,
                     "provenance": {
-                        "inspect_log": path.name,
+                        "inspect_log": inspect_log_path(path),
                         "model": log.eval.model,
                         "usage": dump(sample.model_usage),
                         "duration_seconds": sample.total_time,
@@ -365,6 +393,14 @@ def export_logs(paths: list[Path], output: Path) -> dict:
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(bundle, indent=2, ensure_ascii=False) + "\n")
     return bundle
+
+
+def inspect_log_path(path: Path) -> str:
+    """Link logs beneath the project's shared native viewer root."""
+    try:
+        return path.resolve().relative_to((ROOT / "logs").resolve()).as_posix()
+    except ValueError:
+        return path.name
 
 
 def offline(output: Path, log_dir: Path) -> dict:

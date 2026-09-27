@@ -40,7 +40,7 @@ class Evaluation(Model):
     budget_exhausted: bool
 
 
-def evaluate(state: State) -> Evaluation:
+def evaluate(state: State, *, end_on_expiry: bool = False) -> Evaluation:
     """No status label or self-reported completion can substitute for evidence."""
     diagnostics: list[Diagnostic] = []
 
@@ -251,16 +251,22 @@ def evaluate(state: State) -> Evaluation:
         sorted(claimed_ids),
         [state.now.isoformat()],
     )
+    expired_episode = end_on_expiry and state.business_status == "expired"
     add(
-        "completed_attempt",
-        state.finished,
-        "The attempt has a structured final report.",
+        "completed_episode" if end_on_expiry else "completed_attempt",
+        state.finished or expired_episode,
+        "The episode ended when its contractual deadline irreversibly expired; "
+        "no final report or claims were fabricated."
+        if expired_episode and not state.finished
+        else "The attempt has a structured final report.",
         "The attempt ended without finish; budget exhaustion and incomplete execution are not completed outcomes.",
     )
     success = all(d.passed for d in diagnostics)
     outcome = (
         "success"
         if success
+        else "failure"
+        if expired_episode
         else "budget_exhausted"
         if state.budget_exhausted and not state.finished
         else "incomplete"

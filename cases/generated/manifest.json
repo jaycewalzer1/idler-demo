@@ -1,0 +1,839 @@
+{
+  "schema_version": 1,
+  "suite_id": "dealroom-synthetic-48-v1",
+  "generator": "dealroom.synthesis",
+  "generator_version": "1.0.0",
+  "seed": 20260927,
+  "task_count": 48,
+  "families": [
+    "quote_discovery",
+    "straightforward_execution",
+    "partial_signature_retry",
+    "revised_credit_execution",
+    "deadline_extension",
+    "cancellation_authority",
+    "credit_authority_refresh",
+    "boundary_timing"
+  ],
+  "variants_per_family": 6,
+  "provenance": "Deterministic parameterized synthetic generation; no scraped transactions or model-generated facts. Eight behavioral families use the unchanged DealRoom transition engine and verifier. Private witnesses validate satisfiability and are never included in model prompts. These validation scores are not model results.",
+  "fingerprint": "c3444c7504730288cad98f19b8befb282f18a6707d2f489bf5514c787f523394",
+  "tasks": [
+    {
+      "id": "synth-001",
+      "title": "113 Juniper Walk · roof flashing",
+      "split": "development",
+      "family": "quote_discovery",
+      "variant": 1,
+      "fingerprint": "8a54c41170af8853b133c5a2ca1cfa4572fa3d2e34f5930d612306c5086d656e",
+      "public_initial_fingerprint": "358f8068697a1441b5ee21084b09e6b435511ed815e6a706c05bf378af7cdb67",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "294c58fc7c74102a8693e25ad16b413341e53584124c29985a1f4cf5adf0b543"
+      }
+    },
+    {
+      "id": "synth-002",
+      "title": "116 Birch Court · electrical panel",
+      "split": "development",
+      "family": "quote_discovery",
+      "variant": 2,
+      "fingerprint": "47e5d2d46b4755da30ba5213f4af2732f423e5bc0924db6ec497eedea8bf6360",
+      "public_initial_fingerprint": "46a739fccdff30b33781fea9b6d45d96cda5a76642b0d0425204ae5a5143b317",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "e55c05288de6d22e5674d0123e625c852c20e0ce459ee839376f51450002053f"
+      }
+    },
+    {
+      "id": "synth-003",
+      "title": "119 Cedar Place · foundation drainage",
+      "split": "evaluation",
+      "family": "quote_discovery",
+      "variant": 3,
+      "fingerprint": "eea3c23985b3317b55afbc4704be46f10e63576f7276d381043927b9ff21177e",
+      "public_initial_fingerprint": "000daab28cab3b8e3776235055e4680fa0ce59b59d258e4b394b3250ad0df4f0",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "4793f12106b2d19473ce8d3be1e6553598aeccd7ce5370a4c11b6a2ad5f07aa2"
+      }
+    },
+    {
+      "id": "synth-004",
+      "title": "122 Harbor Lane · heating system",
+      "split": "evaluation",
+      "family": "quote_discovery",
+      "variant": 4,
+      "fingerprint": "02d861eb140fab19d036d584095f5a58f7d09bc8befb0dedadfbec3cc096d60d",
+      "public_initial_fingerprint": "8d72a202231f4d5f3d26c6d8f4cb3c7ecfd7688ebf6f4e3cc554d2f06f575196",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "288f4de5707be604f3cefbc1c7e199843ad23d05753f7647073d73938a9ae580"
+      }
+    },
+    {
+      "id": "synth-005",
+      "title": "125 Maple Rise · plumbing supply",
+      "split": "evaluation",
+      "family": "quote_discovery",
+      "variant": 5,
+      "fingerprint": "60f3dede267f5b3e188e71d07ab75fb6f6f3a2e1d0cba5b863969644af86fa85",
+      "public_initial_fingerprint": "2c664a87d4eabe5b20d28c9e67eda75f53b8d4bda0934710709501bd2a48195b",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "2737fa8db6c443c8654a220ba7baa9a244a2a5b14e8273153967d4e7700e54f0"
+      }
+    },
+    {
+      "id": "synth-006",
+      "title": "128 Brook Way · crawlspace support",
+      "split": "evaluation",
+      "family": "quote_discovery",
+      "variant": 6,
+      "fingerprint": "2ad3cb6f50b71356bd9b94dedce783001814d70be9c72b101984b519ec09fa52",
+      "public_initial_fingerprint": "70681d4ef43e3f8b96aad77cf03811c04a002e6393f0c4008b7531b0b43a4512",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "4d1424e35f51fdca8e3a1deb33f953a5b5e60622b76a06a83d7f49c8d882dc51"
+      }
+    },
+    {
+      "id": "synth-007",
+      "title": "131 Juniper Walk · electrical panel",
+      "split": "development",
+      "family": "straightforward_execution",
+      "variant": 1,
+      "fingerprint": "c7da106a03ea3d800b71973763d4ae040a8458f82a00e1364dcd53fd36c358e1",
+      "public_initial_fingerprint": "e057022dc2e5e67dd40501e30e57733a4e674c19ac638f6f575531c7d33f818a",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "e86b5f1a379736808bfb1a970dd0cb6ac94273b337cb6232e22fd68310a0bab4"
+      }
+    },
+    {
+      "id": "synth-008",
+      "title": "134 Birch Court · foundation drainage",
+      "split": "development",
+      "family": "straightforward_execution",
+      "variant": 2,
+      "fingerprint": "731470bf8e669ea937e933f0ad920ec2d72c7eaa074096610cf35e96fd35cb86",
+      "public_initial_fingerprint": "100736ec0627f5d2b1684a4033fdc2d1afe65b2846bebbba3073ce1216886ffb",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "a4ad8a23e672dff22977f77a4c835067ff1016754004c3fb4e74f8aeaf3d2733"
+      }
+    },
+    {
+      "id": "synth-009",
+      "title": "137 Cedar Place · heating system",
+      "split": "evaluation",
+      "family": "straightforward_execution",
+      "variant": 3,
+      "fingerprint": "c845b9d53da28aa8fe7ca4bdf94f6e17d09abd257679d110f35fed3b4a6bb865",
+      "public_initial_fingerprint": "b3e772505fdaf64c37cc8a153070c6b4ffede8069ff429ac1277507df854f94d",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "74591e81a48454b7f84a09ac6fb87cc0206acd411802caf27f24c6356aa93f17"
+      }
+    },
+    {
+      "id": "synth-010",
+      "title": "140 Harbor Lane · plumbing supply",
+      "split": "evaluation",
+      "family": "straightforward_execution",
+      "variant": 4,
+      "fingerprint": "40b5791a253ce19ecb9b613a8bae520a37d2cb90000914f1bd0a702419cd6f6d",
+      "public_initial_fingerprint": "674509a9014583b75e946a39c662ecb6eddab8f0596f0c088f7af7b90c15dd40",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "4811abe8376ffc13260d086fc5b6f423ff537483fb0f7bf3a59a51bb56daffd9"
+      }
+    },
+    {
+      "id": "synth-011",
+      "title": "143 Maple Rise · crawlspace support",
+      "split": "evaluation",
+      "family": "straightforward_execution",
+      "variant": 5,
+      "fingerprint": "a14dbe2e14948e57cb8a314605cedb89e7112af030ac366a31a53e0c31fb6e96",
+      "public_initial_fingerprint": "b03c649dde0b6a624bcefb405ca0c46a7b2100f4db574861e9636ba0479c9720",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "9e5957f491c13a0a3a64ed8a7622422cf5de17d24ce152f449fcfa60c17841e5"
+      }
+    },
+    {
+      "id": "synth-012",
+      "title": "146 Brook Way · roof flashing",
+      "split": "evaluation",
+      "family": "straightforward_execution",
+      "variant": 6,
+      "fingerprint": "3d3c181c6b4eafd81bb7dff9ac0d35843b122496d8f013b6321feae0110f7d12",
+      "public_initial_fingerprint": "30c1996156dbf921d393b014cc90038a5f2875330bf1e1903fd92b7ebe829eb0",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "d58f74ba0d6d44121a3fc3e628020b3a6e29688a4c370eaeec49992e54c8b185"
+      }
+    },
+    {
+      "id": "synth-013",
+      "title": "149 Juniper Walk · foundation drainage",
+      "split": "development",
+      "family": "partial_signature_retry",
+      "variant": 1,
+      "fingerprint": "84a44044b5bb8d71fa63f4df6509cb793ab6a074d79099660817c298372c4ce0",
+      "public_initial_fingerprint": "c403b8921e1722129d9a0dd5322cc6737929f2cca001f854f6fd766c3fb3349d",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 7,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "641b7ed8547844a5c2d4430e2d1e9d17210aa39f563886ea750c06160928c350"
+      }
+    },
+    {
+      "id": "synth-014",
+      "title": "152 Birch Court · heating system",
+      "split": "development",
+      "family": "partial_signature_retry",
+      "variant": 2,
+      "fingerprint": "7cf1026925121adfd0f1fb1245917e1ab1747ff8362fcf2b64cacc39343a69b2",
+      "public_initial_fingerprint": "fce30ad30f2e2313c411d40dce9c34cd751932be37e8f40fe5bfdee607c10a3f",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 7,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "c5330aa06d2dc4f5df06211dac87664f3c91a0703f1392208175541c49b7d2aa"
+      }
+    },
+    {
+      "id": "synth-015",
+      "title": "155 Cedar Place · plumbing supply",
+      "split": "evaluation",
+      "family": "partial_signature_retry",
+      "variant": 3,
+      "fingerprint": "412ca67cc6ea95f6534d02c8011226743d396b44aeb41c71711312c09bc99afa",
+      "public_initial_fingerprint": "5071834b87c77c9b875f29b8849268385c3949de9d5b5eb6832983736852839a",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 7,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "7a7166dc5b1fe5144e4cfbeb7232dcf1da9c41a5d8f7b87fe88cad350578a745"
+      }
+    },
+    {
+      "id": "synth-016",
+      "title": "158 Harbor Lane · crawlspace support",
+      "split": "evaluation",
+      "family": "partial_signature_retry",
+      "variant": 4,
+      "fingerprint": "f52cf061cf5b1db9060f1d8e808fcdb0b14f40947e4bd01717d1cd8572afd2b3",
+      "public_initial_fingerprint": "caac9371c29ccc1b4960c3344b52040cc0a96d02733a374278e5e79a8497bd55",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 7,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "a419b504fb2775ef75d488c5a4b32b5e0aab123471e2d0665ab103aac7e6ec71"
+      }
+    },
+    {
+      "id": "synth-017",
+      "title": "161 Maple Rise · roof flashing",
+      "split": "evaluation",
+      "family": "partial_signature_retry",
+      "variant": 5,
+      "fingerprint": "08a87fba261ba393ba54c6685c9e1b63878270b8a1eef617e966c983ee71c91f",
+      "public_initial_fingerprint": "1f0ba048bd4e3a29dc212153817915e26aa18733bc8df84a9f0731869f259b4c",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 7,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "1f6240c43f9c526761db677d489bc13001f6de90c95c96e147e2c966867340e7"
+      }
+    },
+    {
+      "id": "synth-018",
+      "title": "164 Brook Way · electrical panel",
+      "split": "evaluation",
+      "family": "partial_signature_retry",
+      "variant": 6,
+      "fingerprint": "fb35535adc62efe2db67a9173b8d5aef3c4eb8709a2f1a0dbda3a234c7d0a074",
+      "public_initial_fingerprint": "8c7e19befcee6083ac2b91f3f58d8ac2cbea6a160bee40c3b26980e31d10212c",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 7,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "911abac73f273685714fcc91228e33de300e2e95ee69c2686a9d4fe04b10f4d3"
+      }
+    },
+    {
+      "id": "synth-019",
+      "title": "167 Juniper Walk · heating system",
+      "split": "development",
+      "family": "revised_credit_execution",
+      "variant": 1,
+      "fingerprint": "b04880c21d2c158d01e93216e0c435d3a1cb93a65b1151a57763c0678062b5fa",
+      "public_initial_fingerprint": "c99142edb44ea0cc08b2bfb8f489b7fe6cbc695615bb684ccbab372e5f510dea",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "7c41012d26d078815e4ede526665d04b1bf39b7fb4f8f4c671e9742b4b316397"
+      }
+    },
+    {
+      "id": "synth-020",
+      "title": "170 Birch Court · plumbing supply",
+      "split": "development",
+      "family": "revised_credit_execution",
+      "variant": 2,
+      "fingerprint": "df64f9a661c2093691097294e35b65beb216520322dfddb4b81a5003bf0a5bb3",
+      "public_initial_fingerprint": "44ea4575037f17ae247d30be02e6558f45b7057aac2aa37171d1503719774d17",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "e4130ab6260a343d717e7fc96c8a09037010ffdbf67eaf1cdb2428d9784f0a63"
+      }
+    },
+    {
+      "id": "synth-021",
+      "title": "173 Cedar Place · crawlspace support",
+      "split": "evaluation",
+      "family": "revised_credit_execution",
+      "variant": 3,
+      "fingerprint": "a60f6455f2742db6f57bcd1bc482abff55ba527e6230c71fb598e57a8b2cc394",
+      "public_initial_fingerprint": "232a29d49b8a221cd53f44e2dbabc84a5b9e189dea60b98f461127bd12b70900",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "4728e890b4d2114e319f89ec2479f035d652bdd83e3228efba98bc28a7fed172"
+      }
+    },
+    {
+      "id": "synth-022",
+      "title": "176 Harbor Lane · roof flashing",
+      "split": "evaluation",
+      "family": "revised_credit_execution",
+      "variant": 4,
+      "fingerprint": "83c9cbe7e66f0856e8b868362ade19f0ef6a0d8748731d55c5db02086d06ce1d",
+      "public_initial_fingerprint": "21381788cf8d3562227676e2eb1d4add378e72e1a6c15217d0e56674a94bfa3c",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "a96f7e7b0c2d54927e47f00ccfacc56f35c7f7d1e3be98cbc462550ba98fe0ee"
+      }
+    },
+    {
+      "id": "synth-023",
+      "title": "179 Maple Rise · electrical panel",
+      "split": "evaluation",
+      "family": "revised_credit_execution",
+      "variant": 5,
+      "fingerprint": "5034cca86732c84a97e41e52f5154fa1ad550383f50d928016dd6d7b43436187",
+      "public_initial_fingerprint": "00f64f76f2cedcbffbb86daf36027d6a19a447ad79c3c9b7738d24ffb3d33cae",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "68918cdb76e411f5d9226a07c66e611f8c229aa4d69a0c9f18ad2fdfecf41339"
+      }
+    },
+    {
+      "id": "synth-024",
+      "title": "182 Brook Way · foundation drainage",
+      "split": "evaluation",
+      "family": "revised_credit_execution",
+      "variant": 6,
+      "fingerprint": "4aa687d73bf5d3872544068c43af5ebb1993a65a1e8e89a10a2e15c19e7089ce",
+      "public_initial_fingerprint": "96b0f3017bbd4a56ed4170354b76be28cde28eff77156f297152728ff52fe8d3",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "8b0ac09d9f636b682ab0b737a462f21965cbd16f69156fb8cc4013db5eb8d97c"
+      }
+    },
+    {
+      "id": "synth-025",
+      "title": "185 Juniper Walk · plumbing supply",
+      "split": "development",
+      "family": "deadline_extension",
+      "variant": 1,
+      "fingerprint": "264beee76ce79251533bdc70e1e8fa4b1437ec0532c73271e22dd6ff65374229",
+      "public_initial_fingerprint": "afd1a8c9716f23cbd3141461a467c47cd33f09b4f7ef25538b817a84da77c303",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 9,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "7b1bb2e504d5f7b1b0eb308c364b068e9e3152f55bfda59b1f8ccebe3b05326d"
+      }
+    },
+    {
+      "id": "synth-026",
+      "title": "188 Birch Court · crawlspace support",
+      "split": "development",
+      "family": "deadline_extension",
+      "variant": 2,
+      "fingerprint": "0d1b8771a0a36b0c8cc0988b3d098295b0a2d30632fcb5be1092a89bf6a9b525",
+      "public_initial_fingerprint": "7053f0170baae724ef3284085711b5df8692b9bb59f98eef4328c6fc3253b32b",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 9,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "5444095c050aef213f7587cf8df649dc6c8efec8f2d4f31c6e2d71c32f114a3e"
+      }
+    },
+    {
+      "id": "synth-027",
+      "title": "191 Cedar Place · roof flashing",
+      "split": "evaluation",
+      "family": "deadline_extension",
+      "variant": 3,
+      "fingerprint": "d0892c34ab20a5308d78a6f01b068b76d49d86c8bdc0f88cdecf303cd886a5cf",
+      "public_initial_fingerprint": "bea80d0a012793e7b0c3d828730a70ff2849754f462396431f757966af63e53f",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 9,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "7f6c832ec60c988dd2519e0dda9cc8b9a2a5880bf1fb9976e08ad8a74391e0d5"
+      }
+    },
+    {
+      "id": "synth-028",
+      "title": "194 Harbor Lane · electrical panel",
+      "split": "evaluation",
+      "family": "deadline_extension",
+      "variant": 4,
+      "fingerprint": "4abc87eb332a1ec79f9c765d81b671e74b45af5460f2f8acd391ea3c29a485bd",
+      "public_initial_fingerprint": "8611916e424a170d15ffe4c1bc088b457f0ac5373c91cb31d410eccc495d1178",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 9,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "1841eefb7f36173a243bae0bbf9284ff606b022d271d0bbe980628d283680244"
+      }
+    },
+    {
+      "id": "synth-029",
+      "title": "197 Maple Rise · foundation drainage",
+      "split": "evaluation",
+      "family": "deadline_extension",
+      "variant": 5,
+      "fingerprint": "b96e11095f499004583ad6e9cd80b93c590ec52f19223b89179009b9b8b2e96c",
+      "public_initial_fingerprint": "9dfd6b244309c57e29b19a453b6070807141c046d554add6aa95769d33438adf",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 9,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "238ef58a2ef9b9b125af79241539d9e06407e4d489db1f09c49ca5c1977ce898"
+      }
+    },
+    {
+      "id": "synth-030",
+      "title": "200 Brook Way · heating system",
+      "split": "evaluation",
+      "family": "deadline_extension",
+      "variant": 6,
+      "fingerprint": "7f42d0190734ec77c5d30f4dfbff9b1fa23acb36cf2aa9e9b95f72d99ffdb4a0",
+      "public_initial_fingerprint": "e0fed2afa7ca08d476bded193eecbac269febeca38b55b171fbdbf9ea4d10580",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 9,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "fe7451a0094929f1ab9e99fcc8f5b6cb0bf3d486325e2cef5903010b4dffe604"
+      }
+    },
+    {
+      "id": "synth-031",
+      "title": "203 Juniper Walk · crawlspace support",
+      "split": "development",
+      "family": "cancellation_authority",
+      "variant": 1,
+      "fingerprint": "5d72fa02c5569c1262585e2a185e53dc0ce21d0268aa15539c2f9f1bc7872c5d",
+      "public_initial_fingerprint": "6b79f9abb4b4d5558163c4d8704a55adea3f5e1e1339ad0d96d1e5ba3e38b786",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 5,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "1d9488eedbe7a72adfb8a90fc6be26a482a63722bdccf5f1a6bac28eeb1a59f8"
+      }
+    },
+    {
+      "id": "synth-032",
+      "title": "206 Birch Court · roof flashing",
+      "split": "development",
+      "family": "cancellation_authority",
+      "variant": 2,
+      "fingerprint": "9d9cdd7046f883d2583fe60440fae79c75411070e041442f148e7a8a5153ea6b",
+      "public_initial_fingerprint": "11d5c9e2f42ee8b6d58bbfa0f2ca84e25ec706abc928ea2068e7d0e356a8d350",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 5,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "05309afa7f83041ee49aa41170509d6fc167c0cfd983abb24cd0af831c466f3a"
+      }
+    },
+    {
+      "id": "synth-033",
+      "title": "209 Cedar Place · electrical panel",
+      "split": "evaluation",
+      "family": "cancellation_authority",
+      "variant": 3,
+      "fingerprint": "0f665c44821a0414599f1467df33b34d87309342f73b7676152c2638a75079d7",
+      "public_initial_fingerprint": "17b084be58a4dd80374fc868ee3735804bd47c8d3fd545ed9eff7173aba99bca",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 5,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "cd5b3f13f65654403531da38f2f17abec6d672ff3a8d71b6759713e9ac8816d9"
+      }
+    },
+    {
+      "id": "synth-034",
+      "title": "212 Harbor Lane · foundation drainage",
+      "split": "evaluation",
+      "family": "cancellation_authority",
+      "variant": 4,
+      "fingerprint": "f2672ca5da239a6eb0c081a68b351f4b2dd11e0c0f228fc008c38f2f7b4a3519",
+      "public_initial_fingerprint": "c450d5d663a9c0d0837dc31d147af25e78c90ed701a5e718815dc89ef5a8d725",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 5,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "071f164bd693962f12b0a60b21e3bd8437fe4ea46e69727904b9570e118be074"
+      }
+    },
+    {
+      "id": "synth-035",
+      "title": "215 Maple Rise · heating system",
+      "split": "evaluation",
+      "family": "cancellation_authority",
+      "variant": 5,
+      "fingerprint": "a18e0908733872d2af8f470cb0c25d9295f70593cee568a236802fe707d2d7e5",
+      "public_initial_fingerprint": "d7d214edb56c5436b8dacd4d7ad0bd9b0adeb95b71aaa69ed383f1c453e0ba0c",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 5,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "057c5fa4c1422c9c3c6dc7bf782b25db46359511299102b388e06edec5774d3a"
+      }
+    },
+    {
+      "id": "synth-036",
+      "title": "218 Brook Way · plumbing supply",
+      "split": "evaluation",
+      "family": "cancellation_authority",
+      "variant": 6,
+      "fingerprint": "88559a55f260c53d1742b8787a9280a36f1142856e6ff74bf895566d5af74927",
+      "public_initial_fingerprint": "ee3c2399eafd1172a937c87a656d8ffab7e5432899a53b65c36026db0dacf482",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 5,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "56844017617b2618053ee813abc6f6808d8a7ab90fbeb38d5a2c4fe7ae5ed55f"
+      }
+    },
+    {
+      "id": "synth-037",
+      "title": "221 Juniper Walk · roof flashing",
+      "split": "development",
+      "family": "credit_authority_refresh",
+      "variant": 1,
+      "fingerprint": "1bbe2e0419f0e064ad347c81d736fe67b5d92cf339395f67829e25b2afa65f51",
+      "public_initial_fingerprint": "f71586509ea417207415499eb0470b1dacf3600a0a32670863fca20af0ce7c21",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "8b2ad540b039a4170d4d68069fa787dd9154d753e25eb8921cd668757d3648f3"
+      }
+    },
+    {
+      "id": "synth-038",
+      "title": "224 Birch Court · electrical panel",
+      "split": "development",
+      "family": "credit_authority_refresh",
+      "variant": 2,
+      "fingerprint": "c9cd5b0f672ddb5c7fc7ff6402c18ee9f8a2b515afc5217bdc3a8f44ef7d720a",
+      "public_initial_fingerprint": "34558b2e395e7e90b994d0998840bfe1bef51f2161cde7339b3c27c1b4ed9a6c",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "be42b2e7cfa20ebb38d2a78fc094c888cd53d058390a0209ae66a89e533eeab7"
+      }
+    },
+    {
+      "id": "synth-039",
+      "title": "227 Cedar Place · foundation drainage",
+      "split": "evaluation",
+      "family": "credit_authority_refresh",
+      "variant": 3,
+      "fingerprint": "0f968cd94378316c9e32311ce15e4480c1165efe0f10b8b04502a3741bda6983",
+      "public_initial_fingerprint": "b71e66769610064bee0f82efd372a8f79e67bfb0660b307d7ea4608a35d6fd79",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "4a1c44ce6d676dd43acb524810c948969998c91adc5dd1e322689feee6982b66"
+      }
+    },
+    {
+      "id": "synth-040",
+      "title": "230 Harbor Lane · heating system",
+      "split": "evaluation",
+      "family": "credit_authority_refresh",
+      "variant": 4,
+      "fingerprint": "f40ca5be25137e964f00705f3001472ef19e11926157ca83412347ef889ac969",
+      "public_initial_fingerprint": "159685ffe8cd7b0c57d926b46765c7f615ec3fc94a99f4a4f6ee31bc0a4c6a11",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "fdd882b64f65a6bdee1e028eb2aa7f2179f5ce9d71b2a33c1ba07ed7002392cb"
+      }
+    },
+    {
+      "id": "synth-041",
+      "title": "233 Maple Rise · plumbing supply",
+      "split": "evaluation",
+      "family": "credit_authority_refresh",
+      "variant": 5,
+      "fingerprint": "cc88b3a106f892edead6607e80f030997bf258a33e351c73bd848998b7252da5",
+      "public_initial_fingerprint": "782b012917e86ae6d0c48eb352a55209e743f73b946969f13663c2b9fd259cda",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "849d1c0cb4f217ae588ec2d431b00c404418710f22e56db8a468d053a1a44599"
+      }
+    },
+    {
+      "id": "synth-042",
+      "title": "236 Brook Way · crawlspace support",
+      "split": "evaluation",
+      "family": "credit_authority_refresh",
+      "variant": 6,
+      "fingerprint": "9c652fa3d17a95e8fdec9164e63dbba19feb13ae4cb5f805ec63cb447e3f68f3",
+      "public_initial_fingerprint": "cfd1d2094c25d438d51038fd66b3a0c249235fcdcb02b72766832ce7f5d63c3a",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 8,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "2d66cb3d52331f57949ba5e37fc03adf6dc2786956cc61ef67138398b915bc33"
+      }
+    },
+    {
+      "id": "synth-043",
+      "title": "239 Juniper Walk · electrical panel",
+      "split": "development",
+      "family": "boundary_timing",
+      "variant": 1,
+      "fingerprint": "b349b998d0ab65daf0698b332ce9e2c375bde2a72c70b3ac8f9bd3d33eb161eb",
+      "public_initial_fingerprint": "7be8e08344b52ccc17ba5d831c8fea8351caa064ccfa893dd4571f14e0b41500",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "25b96ecc4c2bd22eb5cad77ec023c21e0812cba1539b8a0cb74869328543c7d0"
+      }
+    },
+    {
+      "id": "synth-044",
+      "title": "242 Birch Court · foundation drainage",
+      "split": "development",
+      "family": "boundary_timing",
+      "variant": 2,
+      "fingerprint": "757726e363c3e2ba77730d7c37d8a08a180675b7488127c1e9a712c416818c5e",
+      "public_initial_fingerprint": "0dcdc3b094ec577ff43ad5611d1b8b6d031eced2b0adb1ce0d604a5e8be0daf9",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "6b3a1bc4a301e30315d01150f2eb6ee57b93c9be4f9c909df9151085443f6f4a"
+      }
+    },
+    {
+      "id": "synth-045",
+      "title": "245 Cedar Place · heating system",
+      "split": "evaluation",
+      "family": "boundary_timing",
+      "variant": 3,
+      "fingerprint": "ddde8d8eb7a6718dd2834be61e126260cf93a2896d5e44dbf70f1674f25d3181",
+      "public_initial_fingerprint": "26d5c56ce9093a8ee9acea758f57b0dd1cbfb3952b62830d4f66fe7c2d7e3ff7",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "694a69a627ee5a6831f789d344de5277c008f9d26846f5d51283f8a2cfcb730c"
+      }
+    },
+    {
+      "id": "synth-046",
+      "title": "248 Harbor Lane · plumbing supply",
+      "split": "evaluation",
+      "family": "boundary_timing",
+      "variant": 4,
+      "fingerprint": "6d02dab64cf48144b43d1594b63870133fba893d2fae30df2310b5b63c9406b5",
+      "public_initial_fingerprint": "df972912562bf5faf6b370b8fe24fd6c3ee0ee5533327dfa4a25d4d9d5dcc90d",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "05369b1e33524dd363882b3df2fa593b4207bc7253b43be20d926535d11a758c"
+      }
+    },
+    {
+      "id": "synth-047",
+      "title": "251 Maple Rise · crawlspace support",
+      "split": "evaluation",
+      "family": "boundary_timing",
+      "variant": 5,
+      "fingerprint": "bd909f619228064764f5a04b4d85684b06baf2ea713900b088ecea804ba8d711",
+      "public_initial_fingerprint": "66677697b6d87c8a82e7088f55b9a9371ea89b08051393e5e011daf2a6f5619e",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "c77d0e8dc94c914df1646639492ee2948c66a5547ace2cfd54049799fece46c4"
+      }
+    },
+    {
+      "id": "synth-048",
+      "title": "254 Brook Way · roof flashing",
+      "split": "evaluation",
+      "family": "boundary_timing",
+      "variant": 6,
+      "fingerprint": "3816f017f5c3deb0c9dedee3b2fbf44f819fcb835a9950292a67bc77ae470bd1",
+      "public_initial_fingerprint": "ea06e6c18264110f271df244bf76d342fd46ea504fec5f29db1edc3d299cc9f1",
+      "validation": {
+        "kind": "engine_executed_private_witness",
+        "reward": 1,
+        "attempts": 6,
+        "invalid_attempts": 0,
+        "all_predicates_passed": true,
+        "witness_fingerprint": "51723597b7f0699c2749b8e318514489c30dcc316da97e10cb98b6d5fe817213"
+      }
+    }
+  ]
+}

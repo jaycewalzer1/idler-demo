@@ -1,95 +1,168 @@
 # DealRoom
 
-A synthetic real estate transaction environment for evaluating tool-using agents, with a research console for inspecting tasks, tool trajectories, state, and grader evidence. The agent coordinates inspection findings, repair-credit amendments, signatures, and deadlines. Inspect AI supplies the model integrations, ReAct loop, tool execution, evaluation logs, limits, scorer integration, and full transcript viewer.
+A synthetic transaction environment for evaluating tool-using agents, with a research console for comparing models and inspecting tasks, trajectories, state, and verifier evidence. Inspect AI provides the native model integration, ReAct loop, tools, evaluation logs, limits, scorer, and full transcript viewer.
 
-**The supplied demonstration is offline and scripted.** Six fixture witnesses and one repaired continuation succeed; the deliberately flawed flagship script fails. These are fixture validation and an explanatory demonstration, not model-performance results. No live provider evaluation was run because no provider credentials were available in the build environment.
+The current comparison, `dealroom-local-48-text-tools-v4`, runs **48 generated tasks through two downloaded local models: Qwen3 8B and Llama 3.1 8B, for 96 fresh planned attempts**. This is actual local inference through Inspect's native Ollama provider, with Inspect's built-in text tool emulation enabled identically for both models. Task prompts, tools, and emulation are unchanged from v3; the expanded episode and compute budgets are unchanged from v2. Version 4 corrects canonical scoring of operational cutoffs. The original six curated cases and eight scripted demonstrations remain available in the replay library and are excluded from model results.
 
-## Run locally
+**Evaluation status:** v4 starts a fresh matched 96-attempt matrix under the corrected scoring policy. Check the experiment ID and recorded progress in `web/public/benchmark.json` and the console; no final totals are asserted here. The v1 partial run, v2 native-tool diagnostic, and interrupted v3 run are archived separately, and none of their outcomes are merged into v4. Within each experiment, tasks, model digests, prompts, tools, tool-calling format, scoring policy, and limits are frozen; individual outcomes are not retried or selected away.
 
-Tested with Python 3.12.5, uv, Node 22.18.0, and npm 10.9.3. Python 3.12 is selected by `.python-version`; the frontend supports Node `^20.19.0 || >=22.12.0`. Inspect AI is pinned to **0.3.271**. `uv.lock` and `web/package-lock.json` pin the resolved dependencies.
+## Open the console
 
-From this project directory:
+From the project directory:
 
 ```sh
-uv sync --locked
-uv run pytest -q
-uv run dealroom demo
 npm --prefix web ci
-npm --prefix web run dev
-```
-
-Open the Vite URL printed in the terminal, normally `http://127.0.0.1:5173/`. The checked-in `web/public/runs.json` already works without Python, model credentials, or a custom server; `dealroom demo` regenerates it through Inspect's actual task/tool/scorer path using `mockllm/model`.
-
-Build and preview the static page:
-
-```sh
 npm --prefix web run build
 npm --prefix web run preview
 ```
 
-Open the preview URL, normally `http://127.0.0.1:4173/`. The frontend reads local JSON only. It has no provider keys, model calls, job-launch API, or custom backend. File selection loads a new export in browser memory; nothing is uploaded to a service. Open malformed or empty files to see explicit error/empty states.
+Open the printed preview URL, normally `http://127.0.0.1:4173/`. The supplied JSON exports are sufficient to view recorded results without starting models. To develop the frontend, use `npm --prefix web run dev` instead; its default port is 5173.
 
-Open the canonical evaluation records in Inspect's native viewer:
+The console opens **Model results** when `benchmark.json` is present. Its main metric is **successes ÷ scored tasks**, where scored tasks are successes plus objective failures. With no scored tasks, it displays **—**. **Scored coverage** separately shows how many of the 48 planned tasks have a terminal score. Budget limits, execution errors, incomplete attempts, running attempts, and pending attempts are excluded from the pass-rate denominator and remain visible as distinct outcomes. Small or partial scored coverage cannot support a model comparison. Search the task matrix, filter by model or outcome, and select an available result to open its trajectory. **Details** shows recorded timing, tokens, reasons, the native log link, and counts of domain actions (`actions`), Inspect tool calls (`tool_calls`), tool errors (`tool_errors`), and model responses (`generations`). A model response need not invoke a tool, and a tool call rejected during schema validation need not reach the domain engine. Missing measurements remain missing; operational failures do not become reward-zero scored completions.
+
+**Replay library** also retains the scripted failure and repaired continuation. Select `case-01`, inspect the unsigned amendment at step 7, then use **Compare** to inspect the repaired execution. Task details, grading predicates, public evidence, exact-revision signatures, and step controls remain available for each completed replay. Terminal reward describes the whole attempt; state and snapshot diagnostics describe the selected step.
+
+Open canonical evaluation records in another terminal:
 
 ```sh
-uv run inspect view --log-dir logs/demo --host 127.0.0.1 --port 7575
+uv run inspect view --log-dir logs --host 127.0.0.1 --port 7575
 ```
 
-The delivered archive also includes `logs/demo/` from the verified build. Regeneration creates new uniquely named Inspect logs; it does not delete older logs. The generated bundle references only its current eight runs. The native sample grid is configured with terminal score labels, tokens, duration, errors, and limits. Its transcripts are not reimplemented in React.
+Inspect links preserve paths beneath `logs/`, including `demo/`, `pilot/`, `pilot-emulation/`, and `benchmark/`. Full model conversations stay in the native Inspect viewer. The React frontend reads local JSON; it has no model-call endpoint or job-launch backend. **Import export** loads a replay JSON file in browser memory without uploading it. A running benchmark refreshes every 15 seconds. The runner updates both `web/public/` and an existing `web/dist/` so the static preview receives progress without repeated builds.
 
-## Two-minute walkthrough
+## Reproduce the local evaluation
 
-1. The console opens **case-01 / 18 Alder Lane**, **Scripted failure**, at its final recorded step. The verifier shows terminal reward **0.000**. The attempt has finished, but its business disposition remains open.
-2. Open **Task details** to inspect the actual task/system prompts, public policy, initial observation, and seven tool schemas recorded by Inspect.
-3. Return to **Trajectory** and select step **7**, the branch boundary. The shared prefix obtained the $12,000 specialist quote, negotiated an informal $8,000 credit, and created revision-001. Both required signatures are absent. Select the subsequent rejected `set_disposition` action to see its real input and engine response.
-4. Open **Grading** for the evidence behind the failed predicates, then **Compare** for the failed/repaired continuations. Inspect the **Repaired script** at its final step: effective credit is $8,000, residual is $4,000, disposition is proceed, and terminal reward is **1.000**.
-5. Use the action list and step controls to see the evidence and clock change. Search or filter the task rail to inspect the other five cases. The common prefix is reset and replayed, with full state equality asserted at the branch. Comparison positions align by action offset after that boundary, not by wall-clock time.
+Python 3.12 is selected by `.python-version`; the frontend supports Node `^20.19.0 || >=22.12.0`. Inspect AI is pinned to **0.3.271**. `uv.lock` and `web/package-lock.json` pin project dependencies. The local inference run uses **Ollama 0.31.1** on an **Apple M4 Max with 36 GB memory**.
 
-All contractual values, execution statuses, signature records, and diagnostics shown by the page come from Python snapshots. JavaScript formats and selects records; it does not decide legal validity. The terminal result badge describes the entire run; the state cards and reviewer predicates describe the selected step. All names, properties, messages, rules, and organizations are synthetic.
+| Model | Inspect identifier | Quantization | Downloaded size |
+| --- | --- | --- | --- |
+| Qwen3 8B | `ollama/qwen3:8b` | Q4_K_M | Approximately 5.225 GB |
+| Llama 3.1 8B | `ollama/llama3.1:8b` | Q4_K_M | Approximately 4.921 GB |
 
-## Interface reference
+Model digests and exact sizes are recorded in `benchmark.json`. The downloaded weights persist locally in `models/`; weights, dependency installations, and caches are excluded from the project archive. A fresh machine needs Ollama on its PATH and must download the models. Tags can change; resuming an existing evaluation requires its recorded digests and runtime version.
 
-The visual and information structure is informed by Idler's public [ShelfLife sample viewer](https://idler.ai/collections/shelflife/sample) and [E-Sim rollout viewer](https://idler.ai/collections/shelflife-e-sim/sample): light neutral surfaces, compact navigation, task and system prompts, tool schemas, numbered trajectory records, reward, and grading evidence. DealRoom adapts these public patterns into an original research console. Idler's private internal frontier-lab interface was not available to verify; this is not an exact reproduction of it or an Idler-affiliated product.
-
-The task inspection fields are exported from the canonical Inspect sample and its first model request. They include only the recorded public input, system prompt, and tool schemas. The UI does not invent reasoning traces, live evaluations, training progress, or model-performance statistics. Full model conversations remain in the native Inspect viewer. Mock-provider token accounting, when present in export metadata, is not a measurement of live-provider inference.
-
-## Cases
-
-| ID | Split | Validation scenario |
-| --- | --- | --- |
-| case-01 | Development | Flagship: $12,000 eligible cost, maximum $5,000 residual, $8,000 seller credit; Oct 5, 2026 09:00 to Oct 9 17:00, America/New_York. |
-| case-02 | Development | Straightforward authorized execution with complete evidence and enough time. |
-| case-03 | Evaluation | Opens with a partially signed envelope. The disclosed seller availability and retry route permit obtaining the missing signature. |
-| case-04 | Evaluation | Opens with executed $6,000 revision-001 and unsigned $8,000 revision-002. The older credit remains operative until the changed exact revision is signed. |
-| case-05 | Evaluation | Normal credit-signature latency misses the original deadline. An executed extension creates enough time. |
-| case-06 | Evaluation | The disclosed seller concession cannot satisfy the buyer's constraint. Request express cancellation authority and cancel in time. |
-
-Cases 03/04 have short fixture initialization action sequences, replayed through the same transition function at reset. Their historical signatures are real engine records, not manually assigned status labels. Agent attempts start at zero; initialization history is retained for evidence and authority checks. Public handoff materials describe the initial records, while fixture initialization actions remain outside the model input. Witness scripts are case-specific fixture validation, never a third general-purpose solver.
-
-## Domain and evaluation rules
-
-The explicit fictional rules appear in every public case policy. Amounts use integer cents; timestamps require time zones. Read and finish take zero simulated time. Requests, drafting, routing, and disposition take five minutes. Structural and authority checks run before coordination; events during the interval are processed, then the action is revalidated at completion. Proceed readiness uses evidence available at completion, allowing a last signature arriving during those five minutes to count. Rejected actions have no contractual effects, although elapsed time and intervening events are retained. Every call counts toward the 80-attempt limit.
-
-Wait advances to the requested later time. Events use stable timestamp/sequence order. Events at the exact deadline are processed before expiry; a disposition completing then can commit. An executed extension updates pending envelope deadlines. An informal message or draft cannot extend a deadline. A terminal disposition or expiry prevents further business changes; read and final report remain available.
-
-Revisions are immutable. Required parties must sign that exact revision in time; only counterpart events create signatures. A new draft preserves the old operative agreement. The most recently executed credit replaces earlier credit rather than adding amounts. Identical requests do not duplicate replies, revisions, signatures, credits, or reward. A missing signer can be retried once its earlier response has arrived. Buyer authority is scoped and checked at action completion; later instructions affect subsequent actions without retroactively invalidating earlier authorized activity.
-
-Terminal reward is binary. The scorer checks acceptable disposition, historical authority, applicable executed terms, exact-revision signatures, deadline, buyer constraint, and structured final claims. Failures include record IDs and timestamps where applicable. The free-text report provides context; only its structured contractual claims are scored, without an LLM judge. Finishing cannot create execution or a disposition. Cancellation passes only where the case objective allows it.
-
-Each sample gets a fresh engine and lock in its solver closure. Tool calls are explicitly sequential; provider parallel calls are disabled and additionally serialized. Inspect handles cross-sample concurrency. The model sees a public case index and seven typed tools: `read`, `request`, `draft_amendment`, `send_for_signature`, `wait_until`, `set_disposition`, and `finish`. No filesystem, shell, arbitrary network, or evaluator tool is exposed. No targets, witness scripts, private event payloads, or counterpart implementation are supplied to the model. This boundary applies to the supplied runner, not an arbitrary process that can read the repository.
-
-The default limits are 100,000 total model tokens, 120 messages, 180 seconds per sample, 2,048 output tokens per generation, and 80 domain attempts. Tool receipts return compact public indexes; complete evidence is discoverable by typed resource ID. Inspect's built-in loop uses `finish` as its submit tool. A small schema adapter preserves nested discriminated-union constraints in the pinned release's public `ToolParam` format.
-
-## Evaluate a configured model
-
-Use an Inspect provider/model identifier supplied by you; no current model ID is hardcoded. Provider SDKs are optional and locked. For OpenAI or Anthropic, respectively:
+Install dependencies and generate the deterministic task suite:
 
 ```sh
 uv sync --locked --extra openai
-# Or: uv sync --locked --extra anthropic
+uv run python -m dealroom.synthesis --seed 20260927
 ```
 
-Make the provider's usual API key available in your shell. Set `MODEL` to your chosen provider/model identifier. Begin with one development sample and the explicit budget below:
+The `openai` extra supplies the SDK used by Inspect's native Ollama integration; it does not send this evaluation to an OpenAI service or require an API key.
+
+Start the loopback-only model server in a dedicated terminal from the project directory:
+
+```sh
+OLLAMA_HOST=127.0.0.1:11434 \
+OLLAMA_MODELS="$PWD/models" \
+OLLAMA_CONTEXT_LENGTH=40960 \
+OLLAMA_NUM_PARALLEL=1 \
+OLLAMA_MAX_LOADED_MODELS=1 \
+OLLAMA_NO_CLOUD=1 \
+ollama serve
+```
+
+This command runs a foreground server and installs no automatic startup service. In another terminal, download the models if they are not already present, then run the evaluation:
+
+```sh
+OLLAMA_HOST=127.0.0.1:11434 ollama pull qwen3:8b
+OLLAMA_HOST=127.0.0.1:11434 ollama pull llama3.1:8b
+uv run --extra openai python -m dealroom.benchmark \
+  --emulate-tools --id dealroom-local-48-text-tools-v4
+```
+
+Run the same benchmark command, including `--emulate-tools` and the v4 ID, to resume. The runner reconstructs outcomes from canonical Inspect logs, preserves completed attempts including errors and limits, and continues remaining work. It rejects changes to model digests, Ollama/Inspect versions, task/engine/scorer hashes, suite fingerprints, settings, or the planned attempt matrix. Each canonical v4 log records `model_args={"emulate_tools": true}`; resume checks this against the selected format, and the report records `config.tool_calling="inspect_text_emulation"` and `config.score_policy="canonical_unscored_limits"`. An interrupted attempt with a canonical record is retained; it is not silently replaced by another outcome. A different experiment requires a new `--id`, `--output`, and `--runs-output`. The runner's bare default ID, `dealroom-local-48-native-v4`, selects a separate native-tool condition; reproduce this text-tool comparison with the explicit command above.
+
+Serving-context measurements are persisted in the report separately from canonical outcome logs. Resume requires a matching historical measurement for each Ollama attempt with recorded tokens. An interruption after log creation but before that measurement is published can stop resume; restore a genuine report backup containing the observation if available, or keep the attempt unvalidated and start a separate experiment. The runner retains the original log and does not repeat that attempt.
+
+Active experiment settings are identical for both models:
+
+| Setting | Value |
+| --- | --- |
+| Planned attempts | One per task/model; 48 per model |
+| Tool-calling format | Inspect built-in text emulation; `model_args={"emulate_tools": true}` |
+| Task order | Same order, interleaved scenario families; models served in batches of eight |
+| Temperature / generation seed | 0 / 20260927 |
+| Thinking | Disabled |
+| Context window | 40,960 tokens, checked against the serving runtime |
+| Conversation compaction | Native deterministic `CompactionTrim`; threshold 28,672 tokens, `preserve=0.5`, `memory=False` |
+| Output budget per generation | 2,048 tokens |
+| Cumulative model-token budget | 2,000,000 tokens, including repeated input context |
+| Turn / message budget | 128 turns / 512 messages |
+| Wall-clock budget per attempt | 900 seconds |
+| Domain-action budget | 256 actions per episode, including invalid attempts |
+| Contractual expiry | End on actual irreversible expiry; objective failure with reward 0 |
+| Scoring policy | `canonical_unscored_limits`; operational cutoffs are unscored in Inspect and the report |
+| Model/tool concurrency | One sample, one connection, sequential tool calls |
+| Generation cache / outcome retries | Disabled / none |
+
+Task instructions, tool schemas, and Inspect's emulation instructions are the same for both models on each task. The [built-in emulation](https://inspect.aisi.org.uk/providers.html) presents tool schemas in a system prompt, requests calls in `<tool_call>` tags with `name` and `arguments`, and converts those model-produced responses into ordinary Inspect tool calls. It sends no native API tool declarations and returns tool results as user messages. The existing ReAct loop, typed argument validation, domain engine, and scorer remain in use; no custom provider or agent loop is added. Emulation does not guarantee a valid call or a solved task.
+
+This is an explicit change of evaluation condition from the native-tool diagnostics. Native responses sometimes contained repeated prose describing a function call while the server returned no actual tool calls. The shared text format tests coordination through a supported alternative interface; its results cannot isolate base-model ability from runtime, template, parser, and interface effects. Model-specific chat templates remain part of their serving implementations. Timing includes local serving overhead and model loading; it is not a controlled hardware-speed benchmark. Temperature zero and a fixed seed do not guarantee bitwise reproducible inference across runtime or hardware changes.
+
+The runner writes canonical logs to `logs/benchmark/dealroom-local-48-text-tools-v4/`, per-model reporting to `web/public/benchmark.json`, and completed replays plus separately counted issues to `web/public/runs.json`. Reports are derived from logs, not hand-authored performance data. Missing, incomplete, limited, or errored attempts have no numeric terminal reward and do not enter the pass-rate denominator; they remain in the planned matrix and reduce scored coverage.
+
+The v4 scorer uses Inspect's built-in `Score.unscored()` for operational limits and unresolved episodes, consulting public `SampleLimitEvent` records and the environment's evaluated outcome. Both the canonical Inspect viewer and DealRoom report therefore retain these outcomes as unscored. A real completed objective failure, including irreversible contractual expiry without an Inspect cutoff, still receives reward 0.
+
+The larger domain-action budget is an explicit episode override, not a mutation of the generated fixtures. Logs record both the base fixture fingerprint and effective episode fingerprint so the exporter reconstructs the exact 256-action configuration. Native `CompactionTrim` trims history at the declared threshold without a model-generated memory summary. Both models receive the same compaction settings.
+
+## Archived experiments and infrastructure pilots
+
+The original `dealroom-local-48-v1` run stopped after **52 resolved attempts: 6 successes, 18 scored failures, and 28 budget limits**. One additional attempt was cancelled by the operator, and 43 remained pending. This was a partial run, not a completed 96-attempt baseline. Its 53 native Inspect logs, `report.json`, `replays.json`, and snapshots of the three environment source files are retained beneath `logs/benchmark/dealroom-local-48-v1/`.
+
+The expanded native-tool diagnostic, `dealroom-local-48-expanded-v2`, retained **four Llama records: one objective contractual-expiry failure, two budget limits, and one operator-cancelled incomplete attempt**, with 92 attempts still pending. No Qwen attempt ran, so v2 is not a model comparison. Its four canonical logs, report, replays, and source snapshots remain under `logs/benchmark/dealroom-local-48-expanded-v2/`.
+
+The early shared text-tool run, `dealroom-local-48-text-tools-v3`, was stopped when a canonical scoring defect was found: Inspect could display a numeric zero for an operational limit even though DealRoom's report correctly kept that attempt unscored. The run retained **six Llama records: five objective failures and one operator-cancelled incomplete attempt**, with 90 pending. No Qwen attempt ran. Its exact logs, report, replays, and source snapshots remain under `logs/benchmark/dealroom-local-48-text-tools-v3/`.
+
+Archived native Inspect logs predate the v4 scorer correction; numeric zeros shown on limited attempts in those old logs must not be interpreted as objective task failures. The old records are preserved, with operational outcomes distinguished in their reports. All three archives are excluded from v4, which starts all 96 task/model pairs afresh with canonical unscored cutoffs. It does not replace archived records or rerun only selected failures.
+
+Two original infrastructure pilots remain in `logs/pilot/`. Two additional **unscored** emulation smoke attempts are retained in `logs/pilot-emulation/20260927T180401Z/`. On the same curated development case, both Llama and Qwen produced actual model-backed tool events and three recorded domain actions. These smoke attempts verified transport and provenance with scoring disabled; they are not capability scores and all pilots are excluded from per-model results.
+
+## Task suite and provenance
+
+The **48 tasks are programmatically synthesized**, using eight behavioral families with six deterministic variants each. They are parameterized transaction scenarios, not model-generated facts or scraped transactions. Seed 20260927 controls variations in costs, credit thresholds, authority, evidence, signature latency, deadlines, parties, and properties.
+
+| Family | Tasks | Coordination requirement |
+| --- | --- | --- |
+| Quote discovery | `synth-001`–`synth-006` | Obtain specialist evidence before resolving a repair credit. |
+| Straightforward execution | `synth-007`–`synth-012` | Execute an authorized credit with complete evidence. |
+| Partial signature retry | `synth-013`–`synth-018` | Recover the missing signature on the existing exact revision. |
+| Revised credit execution | `synth-019`–`synth-024` | Preserve the old executed terms until the changed revision executes. |
+| Deadline extension | `synth-025`–`synth-030` | Execute an extension before completing slower credit signatures. |
+| Cancellation authority | `synth-031`–`synth-036` | Obtain express authority and cancel when available credit is insufficient. |
+| Credit authority refresh | `synth-037`–`synth-042` | Refresh the buyer's authority before taking actions outside its initial scope. |
+| Boundary timing | `synth-043`–`synth-048` | Coordinate signatures and disposition at a tight timing boundary. |
+
+Each family has two development and four evaluation variants: 16 development and 32 evaluation tasks. The matched evaluation uses all 48. `cases/generated/manifest.json` records generator version, seed, task fingerprints, public initial-state fingerprints, and private validation results. Every task is validated by executing a private witness through the unchanged transition engine and objective scorer. Witness actions, expected outcomes, and private counterpart implementation are never model inputs. Witness success establishes satisfiability, not model performance.
+
+The original curated collection remains separate:
+
+| ID | Split | Scenario |
+| --- | --- | --- |
+| `case-01` | Development | Flagship: $12,000 eligible cost, maximum $5,000 residual, $8,000 credit; unsigned execution trap. |
+| `case-02` | Development | Straightforward authorized execution. |
+| `case-03` | Evaluation | Partially signed envelope with a disclosed retry route. |
+| `case-04` | Evaluation | Executed $6,000 revision and unsigned $8,000 revision. |
+| `case-05` | Evaluation | Credit signatures require an executed deadline extension. |
+| `case-06` | Evaluation | Insufficient seller concession requires express cancellation authority. |
+
+The eight original demonstrations are six fixture witnesses and a paired flagship failure/repaired continuation. Seven succeed and the deliberately flawed script fails. These are explanatory scripts using Inspect's `mockllm/model`, not a model benchmark. Their token accounting is not local-model inference usage. `uv run dealroom demo` regenerates the scripted bundle; the supplied logs already contain these records, so rerunning it is unnecessary for viewing or resuming the matched benchmark.
+
+## Engine and reward
+
+All names, properties, messages, organizations, and transaction rules are synthetic. Amounts use integer cents and timestamps require time zones. Read and finish consume no simulated time; requests, drafting, routing, and disposition take five minutes. Structural and authority checks run before coordination, scheduled events are processed, and the action is revalidated at completion. Rejected actions have no contractual effects, but elapsed time and intervening events remain. Curated fixtures declare 80 domain attempts and generated fixtures declare 64. The expanded benchmark explicitly grants 256 actions per episode while retaining the unchanged base fixtures and their fingerprints. Invalid actions count toward the effective limit; exhausting this compute budget is unscored.
+
+Wait processes events in stable timestamp/sequence order. Events at the exact deadline precede expiry; a disposition completing then can commit. An executed extension updates pending envelope deadlines. An informal message or draft cannot extend a deadline. Terminal disposition or expiry prevents further business changes. In the expanded experiment, actual irreversible contractual expiry ends the episode immediately as an objective task failure, without requesting more actions or inventing a `finish` call. Other finish requirements are unchanged; the generic engine still permits reading and final reporting after business termination.
+
+Revisions are immutable, and required parties must sign that exact revision in time. Only counterpart events create signatures. Drafting preserves the old operative agreement; a newly executed credit replaces rather than adds to it. Duplicate requests do not duplicate replies, signatures, credits, or reward. A missing signer can be retried after its earlier response arrives. Authority is scoped and checked at action completion. Initialization history is replayed through the same engine and does not consume the new attempt's action budget.
+
+Binary terminal reward checks acceptable disposition, historical authority, executed terms, exact-revision signatures, deadline, buyer constraints, and structured final claims. Reasons include evidence IDs and timestamps. Free text provides context; structured claims are scored without an LLM judge. Calling `finish` cannot create execution or a disposition. Actual contractual expiry receives reward 0 because the environment objective has become impossible, even if no `finish` call occurred. Its replay retains the real final action and expiry evidence. A wall-clock, token, message, turn, or domain-action limit is instead an operational cutoff with no terminal reward, as are errors and otherwise unfinished attempts.
+
+Every sample receives a fresh engine and lock. The agent sees public observations and seven typed tools: `read`, `request`, `draft_amendment`, `send_for_signature`, `wait_until`, `set_disposition`, and `finish`. The runner exposes no filesystem, shell, arbitrary network, evaluator tools, private witnesses, or targets. This observation boundary does not prevent an unrelated local process from reading repository files. Contractual state and reviewer diagnostics shown in the UI come from Python; JavaScript formats and selects records.
+
+## Other evaluations and exports
+
+Inspect also accepts configured cloud providers; OpenAI/Anthropic SDK installation was checked, but credentialed cloud inference has not been verified. With a provider key already available in the shell and `MODEL` set to its Inspect identifier:
 
 ```sh
 uv run --extra openai inspect eval dealroom/task.py \
@@ -98,9 +171,7 @@ uv run --extra openai inspect eval dealroom/task.py \
   --log-dir logs/model
 ```
 
-For Anthropic, change `--extra openai` to `--extra anthropic`. Other providers can use Inspect's integrations after installing their required SDK; those optional SDKs were not validated here. To evaluate a split, replace `-T case_id=case-01` with `-T split=development` or `-T split=evaluation`. Omitting task arguments runs all six cases. This is a time/token budget, not a dollar guarantee; provider pricing determines cost.
-
-These CLI flags and task loading were exercised with Inspect's mock provider. Provider SDK installation/import was verified; credentialed live inference was **not** verified. The offline regression suite exercises actual ReAct generation requests and tool calls using Inspect's supported mock-model outputs, not a replacement harness or provider adapter.
+For Anthropic use `--extra anthropic`. Use `-T suite=synthetic` for generated tasks, and optionally `-T split=development`, `-T split=evaluation`, or a matching `-T case_id=synth-001`. Without task arguments, the generic task runs the original six cases. Its defaults are 100,000 total tokens, 120 messages, 180 seconds, and 2,048 output tokens per generation; the matched local runner explicitly overrides these with the settings above.
 
 Export completed samples from native logs:
 
@@ -108,22 +179,18 @@ Export completed samples from native logs:
 uv run dealroom export logs/model/*.eval --output web/public/model-runs.json
 ```
 
-Open that file using **Import export**, or export to `web/public/runs.json` to replace the default bundle. Export uses Inspect's public `read_eval_log` API and replays recorded actions through the same engine. It verifies the fixture fingerprint and compares replay reward with the canonical Inspect score. Exporting against a changed fixture fails explicitly. Compact actions/events and a fixture hash live in per-sample Inspect metadata; no second model transcript is created.
+Select that file with **Import export**. Export uses Inspect's public log API, replays actions through the engine, verifies fixture fingerprints, and checks equality with the canonical score. Changed fixtures fail explicitly. The JSON keeps errors, limits, incomplete samples, and cancellations separate from completed replay runs. Unlabelled mock-provider exports remain labeled validation. No second model transcript is created.
 
-Exports retain total planned samples, completed domain outcomes, successes, failures, execution errors, budget exhaustion, and incomplete counts, plus run-level errors/cancellations. Errors, exhausted budgets, and unfinished attempts are excluded from ordinary completed-run replays and listed as issues, preserving the denominator. Supplied scripts are clearly labeled; an unlabelled mock-provider export is also labeled validation, never live-model performance.
+## Implementation and checks
 
-## Implementation and verification
-
-- `dealroom/domain.py`: typed fixtures/actions/records, reset, public observations, scheduled events, and one transition function.
-- `dealroom/score.py`: explicit evidence predicates and diagnostics.
-- `dealroom/task.py`: sample-local Inspect tools, built-in ReAct configuration, scorer, and native viewer configuration.
-- `dealroom/witnesses.py`: known-fixture action sequences and flagship shared prefix/alternate suffixes.
-- `dealroom/demo.py`: offline Inspect runs and derived JSON exports.
-- `cases/`: six validated, self-contained synthetic JSON fixtures.
-- `web/`: React/TypeScript, Vite, original HTML/CSS, local state, file loading, and shipped run export.
-- `tests/`: domain, adversarial, and real Inspect integration checks.
-
-Run all checks:
+- `dealroom/domain.py`, `score.py`: typed state, transitions, events, and evidence predicates.
+- `dealroom/task.py`: Inspect tools, native ReAct solver, sample isolation, and scorer.
+- `dealroom/synthesis.py`: seeded task generation and private satisfiability validation.
+- `dealroom/benchmark.py`: matched local inference, resume checks, canonical reporting, and live exports.
+- `dealroom/demo.py`, `witnesses.py`: scripted examples and replay export.
+- `cases/`, `cases/generated/`: curated fixtures and the generated suite with its manifest.
+- `web/`: React/TypeScript console, per-model results, replay inspection, and local import.
+- `tests/`: domain/adversarial rules, synthesis invariants, real Inspect integration, and reporting/resume checks.
 
 ```sh
 uv run pytest -q
@@ -131,9 +198,11 @@ uv run ruff check dealroom tests
 npm --prefix web run build
 ```
 
-Build verification on September 27, 2026: **53 tests passed**, Ruff passed, and the production frontend built successfully. Eight canonical Inspect logs contain seven successful scripted outcomes and the expected flagship failure, with zero execution errors, limits, or incomplete attempts.
+Tests cover authority and deadline boundaries, immutable revision/signature behavior, duplicate actions, limits, sample isolation, public-only observations, witness satisfiability, fixture/score consistency, and outcome classification without dropping failed or unfinished attempts. Reporting checks enforce the complete 96-attempt matrix and matching tool-emulation provenance. Frontend validation checks the scored-only pass-rate denominator, separate planned coverage, the no-score state, missing measurements, contradictory rewards, duplicate attempts, model/task references, and nested native-viewer links. The corrected v4 implementation passes 195 tests and Ruff checks. Tests exercise canonical unscored token, turn, message, time, and domain-action cutoffs, native-log round trips, aggregate exclusion, and valid outcomes at the final allowed action. Final browser verification and run totals are recorded after evaluation completes.
 
-Verified behavior includes every witness and failed/repaired result; prefix equality; initial trap records; old revision and missing signatures; expired/historical authority and authority changes during coordination; late execution; duplicate requests; exact-deadline ordering; extension effects; action limits; concurrent sample isolation; actual public-only model requests; rejected final-claim correction; fixture-change rejection; score/export equality; error and limit denominators; and all seven tools through Inspect. Research-console browser checks covered desktop and 390px widths, task/tool details, task search and split filters, canonical Inspect deep links, legacy/malformed/empty/incomplete exports, keyboard navigation, changing evidence and signatures, replay controls, and branch-aligned comparison switching. No browser console errors were observed.
+## Interface reference
+
+The console uses public patterns from Idler's [ShelfLife sample viewer](https://idler.ai/collections/shelflife/sample) and [E-Sim rollout viewer](https://idler.ai/collections/shelflife-e-sim/sample): neutral surfaces, compact task navigation, prompts, tool schemas, numbered trajectories, reward, and grading evidence. This is an original DealRoom interface, not a verified reproduction of Idler's private internal UI or an affiliated product. It does not invent reasoning traces, training progress, or model-performance records.
 
 ## SilverKey source ledger
 
@@ -153,6 +222,8 @@ SilverKey's root manifest declares **UNLICENSED**, with no standalone LICENSE/CO
 
 Harness references: [Inspect agents](https://inspect.aisi.org.uk/agents.html), [tools](https://inspect.aisi.org.uk/tools.html), [native viewer](https://inspect.aisi.org.uk/log-viewer.html), and [task views](https://inspect.aisi.org.uk/task-views.html). APIs were checked against the installed pinned release. No second harness, speculative training adapter, or arbitrary React embedding in Inspect was added.
 
-## Limits of the demonstration
+## Scope of the results
 
-These are six curated examples, including two development and four evaluation cases. They are not contamination-proof holdouts, a statistically meaningful benchmark, evidence of broad generalization, or evidence of learning improvements. All transaction rules are explicit fictional assumptions, not jurisdictional law. There is no business-day calendar or stochastic counterpart; case plus actions is deterministic, while live LLM outputs need not be. The failure policy is deliberately authored, not a fair baseline or a manufactured model failure. Reviewer JSON and fixture files contain information an unrestricted local process could read. The frontend is a local replay inspection tool, not a consumer transaction application. Publishing, sending messages to Ivan, real signatures, and operating transaction services are outside this project.
+The generated tasks span eight designed behavioral families; variants within a family are related. This is a small synthetic evaluation of two locally quantized models under one constrained configuration, not evidence of broad generalization, independent real-world sampling, or learning improvement. Development/evaluation labels do not establish contamination-proof holdouts. All transaction rules are explicit fictional assumptions, not jurisdictional law. Case plus actions is deterministic; model output need not be. There is no stochastic counterpart or business-day calendar.
+
+The authored scripted failure explains an execution boundary and is not a baseline for model comparison. Real local-model outcomes are reported separately and preserved whether successful or not. The frontend is a local research inspection tool; operating real transaction services, executing signatures, publishing, or sending external messages is outside this project.

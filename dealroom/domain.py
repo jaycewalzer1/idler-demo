@@ -288,7 +288,10 @@ def list_cases() -> list[str]:
 def load_case(case: str | Path) -> Case:
     path = Path(case)
     if not path.is_file():
-        path = Path(__file__).resolve().parent.parent / "cases" / f"{case}.json"
+        directory = Path(__file__).resolve().parent.parent / "cases"
+        path = directory / f"{case}.json"
+        if not path.is_file() and str(case).startswith("synth-"):
+            path = directory / "generated" / f"{case}.json"
     return Case.model_validate_json(path.read_text())
 
 

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react';
-import { parseExport } from './types';
-import type { Amendment, Diagnostic, Evidence, Run, RunExport, Snapshot, Step } from './types';
+import { inspectLogUrl, missingBenchmarkReplays, parseBenchmark, parseExport } from './types';
+import BenchmarkResults from './BenchmarkResults';
+import type { Amendment, BenchmarkExport, Diagnostic, Evidence, Run, RunExport, Snapshot, Step } from './types';
 
 const kindLabels: Record<Run['kind'], string> = { scripted_failure: 'Scripted failure', repaired_script: 'Repaired script', fixture_witness: 'Fixture witness', recorded_model: 'Recorded model' };
 const dollars = (cents: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: cents % 100 === 0 ? 0 : 2 }).format(cents / 100);
@@ -122,6 +123,16 @@ function Comparison({ run, pair, onInspect }: { run: Run; pair: Run; onInspect: 
 type MainTab = 'task' | 'trajectory' | 'grading' | 'compare';
 export default function App() {
   const [data, setData] = useState<RunExport | null>(null);
+  const [benchmark, setBenchmark] = useState<BenchmarkExport | null>(null);
+  const [benchmarkError, setBenchmarkError] = useState('');
+  const [replayError, setReplayError] = useState('');
+  const [replaySyncPending, setReplaySyncPending] = useState(false);
+  const [missingReplayCount, setMissingReplayCount] = useState(0);
+  const benchmarkRef = useRef<BenchmarkExport | null>(null);
+  const [view, setView] = useState<'results' | 'replay'>('results');
+  const [refreshing, setRefreshing] = useState(false);
+  const bundledSource = useRef(true);
+  const refreshInFlight = useRef(false);
   const [runId, setRunId] = useState('');
   const [position, setPosition] = useState(0);
   const [tab, setTab] = useState<MainTab>('trajectory');
@@ -136,37 +147,92 @@ export default function App() {
   const filteredCases = cases.filter(item => (split === 'all' || item.split === split) && `${item.case_id} ${item.case_title}`.toLowerCase().includes(query.toLowerCase()));
   const pair = data?.runs.find(item => item.id === run?.paired_run_id && item.case_id === run?.case_id);
   const issueCounts = data?.summary ? ['execution_errors', 'budget_exhaustions', 'incomplete', 'run_errors', 'cancelled_runs'].flatMap(key => { const count = data.summary?.[key]; return typeof count === 'number' && count > 0 ? [`${count} ${humanize(key).toLowerCase()}`] : []; }) : [];
-  const inspectUrl = run?.provenance?.inspect_log ? `http://127.0.0.1:7575/#/tasks/${encodeURIComponent(run.provenance.inspect_log.split(/[\\/]/).pop() ?? '')}` : null;
+  const showResults = view === 'results' && benchmark !== null;
+  const inspectUrl = run?.provenance?.inspect_log ? inspectLogUrl(run.provenance.inspect_log) : null;
   function acceptData(parsed: RunExport, name: string) {
     const first = parsed.runs.find(item => item.kind === 'scripted_failure') ?? parsed.runs[0];
     setData(parsed); setRunId(first?.id ?? ''); setPosition(first ? first.steps.length - 1 : 0); setSource(name); setError(''); setTab('trajectory'); setQuery(''); setSplit('all');
   }
+  async function fetchReplay() {
+    const response = await fetch(`${import.meta.env.BASE_URL}runs.json`, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Could not load runs.json (HTTP ${response.status}). Generate offline traces or import an exported JSON file.`);
+    if (!response.headers.get('content-type')?.includes('json')) throw new Error('The bundled runs.json export is missing. Generate offline traces with uv run dealroom demo, or import a DealRoom export.');
+    return parseExport(await response.json());
+  }
+  async function fetchBenchmark() {
+    const response = await fetch(`${import.meta.env.BASE_URL}benchmark.json`, { cache: 'no-store' });
+    if (response.status === 404 || !response.headers.get('content-type')?.includes('json')) return null;
+    if (!response.ok) throw new Error(`Could not load benchmark.json (HTTP ${response.status}).`);
+    return parseBenchmark(await response.json());
+  }
   async function loadDefault() {
     setLoading(true);
+    const [replayResult, benchmarkResult] = await Promise.allSettled([fetchReplay(), fetchBenchmark()]);
+    const nextBenchmark = benchmarkResult.status === 'fulfilled' ? benchmarkResult.value : benchmarkRef.current;
+    if (replayResult.status === 'fulfilled') {
+      acceptData(replayResult.value, 'Bundled engine export'); bundledSource.current = true; setReplayError('');
+      const missing = missingBenchmarkReplays(nextBenchmark, replayResult.value);
+      setMissingReplayCount(missing.length); setReplaySyncPending(missing.length > 0);
+    } else {
+      setReplayError(replayResult.reason instanceof Error ? replayResult.reason.message : 'Could not load replay data.');
+      setReplaySyncPending(true);
+    }
+    if (benchmarkResult.status === 'fulfilled') {
+      benchmarkRef.current = benchmarkResult.value; setBenchmark(benchmarkResult.value); setBenchmarkError(''); setView(benchmarkResult.value ? 'results' : 'replay');
+    } else setBenchmarkError(benchmarkResult.reason instanceof Error ? benchmarkResult.reason.message : 'Could not load benchmark results.');
+    setLoading(false);
+  }
+  async function refreshBenchmark() {
+    if (refreshInFlight.current) return;
+    refreshInFlight.current = true; setRefreshing(true);
     try {
-      const response = await fetch(`${import.meta.env.BASE_URL}runs.json`);
-      if (!response.ok) throw new Error(`Could not load runs.json (HTTP ${response.status}). Generate offline traces or import an exported JSON file.`);
-      if (!response.headers.get('content-type')?.includes('json')) throw new Error('The bundled runs.json export is missing. Generate offline traces with uv run dealroom demo, or import a DealRoom export.');
-      acceptData(parseExport(await response.json()), 'Bundled engine export');
-    } catch (err) { setError(err instanceof Error ? err.message : 'Could not load replay data.'); }
-    finally { setLoading(false); }
+      // Fetch the report before replays: the runner publishes replays first.
+      // A terminal report must not stop recovery of a missing or failed replay fetch.
+      try {
+        const nextBenchmark = await fetchBenchmark();
+        if (nextBenchmark) { benchmarkRef.current = nextBenchmark; setBenchmark(nextBenchmark); setBenchmarkError(''); }
+        else setBenchmarkError('The benchmark export is temporarily unavailable. Previously loaded results remain visible.');
+      } catch (err) { setBenchmarkError(err instanceof Error ? err.message : 'Could not refresh benchmark results.'); }
+      if (bundledSource.current) {
+        try {
+          const nextReplay = await fetchReplay();
+          if (bundledSource.current) {
+            setData(nextReplay); setReplayError('');
+            const missing = missingBenchmarkReplays(benchmarkRef.current, nextReplay);
+            setMissingReplayCount(missing.length); setReplaySyncPending(missing.length > 0);
+          }
+        } catch (err) {
+          if (bundledSource.current) {
+            setReplayError(err instanceof Error ? err.message : 'Could not refresh replay data.');
+            setReplaySyncPending(true);
+          }
+        }
+      }
+    } finally { refreshInFlight.current = false; setRefreshing(false); }
   }
   useEffect(() => { void loadDefault(); }, []);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [view]);
+  useEffect(() => {
+    if (benchmark?.status !== 'running' && !replaySyncPending) return;
+    const interval = window.setInterval(() => { void refreshBenchmark(); }, 15_000);
+    return () => window.clearInterval(interval);
+  }, [benchmark?.status, replaySyncPending]);
   async function upload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
       if (file.size > 50 * 1024 * 1024) throw new Error('This export exceeds 50 MB. Export a smaller set of runs and try again.');
       acceptData(parseExport(JSON.parse(await file.text())), file.name);
+      bundledSource.current = false; setView('replay'); setReplayError(''); setReplaySyncPending(false); setMissingReplayCount(0);
     } catch (err) { setError(err instanceof SyntaxError ? 'This file is not valid JSON. Select a DealRoom replay export.' : err instanceof Error ? err.message : 'Could not read this export.'); }
     event.target.value = '';
   }
   function selectRun(next: Run, nextPosition = next.steps.length - 1) {
     const nextPair = data?.runs.find(item => item.id === next.paired_run_id && item.case_id === next.case_id);
-    setRunId(next.id); setPosition(Math.min(nextPosition, next.steps.length - 1));
+    setView('replay'); setRunId(next.id); setPosition(Math.min(nextPosition, next.steps.length - 1));
     if (!nextPair && tab === 'compare') setTab('trajectory');
   }
-  return <div className="app-shell"><a className="skip-link" href="#main">Skip to workspace</a><input ref={inputRef} type="file" accept=".json,application/json" onChange={upload} className="visually-hidden" aria-label="Import DealRoom JSON export" /><aside className="collection-rail"><a className="brand" href="#main"><span className="brand-mark"><Icon name="grid" size={19} /></span><span>DealRoom<span className="brand-subtitle">Environment workspace</span></span></a><div className="collection-label"><span className="section-label">Collection</span><span className="mono">v0.1.0</span></div><div className="collection-title">Inspection coordination <Icon name="chevron" size={12} /></div><label className="search-input"><Icon name="search" size={14} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search tasks…" aria-label="Search tasks" /><span className="mono">{cases.length}</span></label><div className="split-filters" aria-label="Filter task split">{(['all', 'development', 'evaluation'] as const).map(item => <button key={item} aria-pressed={split === item} onClick={() => setSplit(item)}>{item === 'all' ? 'All' : item === 'development' ? 'Dev' : 'Eval'}</button>)}</div><nav className="case-list" aria-label="Environment tasks">{filteredCases.map(item => <button key={item.case_id} className={`case-row ${run?.case_id === item.case_id ? 'active' : ''}`} aria-current={run?.case_id === item.case_id ? 'true' : undefined} onClick={() => { const candidate = data?.runs.find(candidate => candidate.case_id === item.case_id && candidate.kind === 'scripted_failure') ?? data?.runs.find(candidate => candidate.case_id === item.case_id); if (candidate) selectRun(candidate); }}><span className="case-top"><code>{item.case_id}</code><span>{item.split === 'development' ? 'dev' : 'eval'}</span></span><strong>{item.case_title.split(' · ')[0]}</strong></button>)}{!filteredCases.length && !loading && <p className="no-tasks">No matching tasks.</p>}</nav><div className="rail-footer"><span className="section-label">Independent environment</span><p>Deterministic transaction engine<br />Synthetic cases · objective rewards</p><a href="https://idler.ai/collections/shelflife-e-sim/sample" target="_blank" rel="noreferrer">Interface informed by Idler’s public task viewer <Icon name="external" size={11} /></a></div></aside><div className="main-shell"><header className="topbar"><div className="breadcrumbs"><span>Environments</span><Icon name="chevron" size={11} /><span>DealRoom</span>{run && <><Icon name="chevron" size={11} /><code>{run.case_id}</code></>}</div><div className="topbar-actions">{inspectUrl && <a className="button subtle" href={inspectUrl} target="_blank" rel="noreferrer" title="Open full model transcript in the local Inspect viewer">Inspect log <Icon name="external" size={13} /></a>}<button className="button" onClick={() => inputRef.current?.click()}><Icon name="upload" size={14} />Import export</button></div></header><main id="main">{error && <div role="alert" className="error-banner"><div><strong>Export could not be loaded</strong><p>{error}</p>{data && <p>The previously loaded export remains available.</p>}</div><button className="button" onClick={() => void loadDefault()}>Reload bundled export</button><button className="icon-button" aria-label="Dismiss error" onClick={() => setError('')}><Icon name="close" size={14} /></button></div>}{issueCounts.length > 0 && <div className="issue-banner" role="status"><strong>Some samples did not complete.</strong> {issueCounts.join(' · ')}{typeof data?.summary?.total_samples === 'number' ? ` · ${data.summary.total_samples} total samples` : ''}. These are counted separately from scored replay runs.</div>}
-    {loading && !data ? <div className="empty-page" role="status"><span className="loader" /><h1>Loading recorded trajectories</h1></div> : !run || !data ? <div className="empty-page"><Icon name="file" size={30} /><h1>{data ? 'No runs in this export' : 'No trajectory loaded'}</h1><p>Import a DealRoom JSON export to inspect a completed engine run.</p><button className="button" onClick={() => inputRef.current?.click()}>Import export</button><p className="muted">Generate a demonstration with <code>uv run dealroom demo</code>.</p></div> : <><section className="task-header"><div className="task-heading"><div><div className="section-label">{run.case_id} <span> / </span> {run.split}</div><h1>{run.case_title}</h1></div><div className="run-selector"><label htmlFor="run-select">Recorded run</label><select id="run-select" value={run.id} onChange={event => { const next = data.runs.find(item => item.id === event.target.value); if (next) selectRun(next); }}>{data.runs.filter(item => item.case_id === run.case_id).map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></div></div><div className="run-metadata"><Badge>{kindLabels[run.kind]}</Badge><span>Model <code>{run.provenance?.model ?? 'Not recorded'}</code></span><span>Actions <strong>{run.steps.filter(step => step.action !== null).length}</strong></span><span>Reward <strong className="mono">{reward(run.score.success)}</strong></span><span className="run-id"><code>{run.id}</code></span></div><p className="run-description">{run.description}</p></section><Tabs items={[{ id: 'task', label: 'Task details' }, { id: 'trajectory', label: 'Trajectory', count: run.steps.filter(step => step.action !== null).length }, { id: 'grading', label: 'Grading' }, { id: 'compare', label: 'Compare', disabled: !pair }]} value={tab} onChange={setTab} label="Environment workspace" className="main-tabs" /><div className="main-content" role="tabpanel" aria-label={tab === 'task' ? 'Task details' : humanize(tab)}>{tab === 'trajectory' && <Trajectory key={run.id} run={run} position={Math.min(position, run.steps.length - 1)} setPosition={setPosition} onGrade={() => setTab('grading')} />}{tab === 'task' && <TaskDetails run={run} />}{tab === 'grading' && <Grading run={run} />}{tab === 'compare' && pair && <Comparison key={`${run.id}-${pair.id}`} run={run} pair={pair} onInspect={(item, index) => { selectRun(item, index); setTab('trajectory'); }} />}</div></>}
-    </main><footer className="workspace-footer"><span><span className="status-dot" />{data ? `${data.runs.length} recorded runs · ${source}` : 'Local replay workspace'}</span>{data && <span>Exported {dateTime(data.generated_at)}</span>}</footer></div></div>;
+  return <div className="app-shell"><a className="skip-link" href="#main">Skip to workspace</a><input ref={inputRef} type="file" accept=".json,application/json" onChange={upload} className="visually-hidden" aria-label="Import DealRoom JSON export" /><aside className="collection-rail"><a className="brand" href="#main"><span className="brand-mark"><Icon name="grid" size={19} /></span><span>DealRoom<span className="brand-subtitle">Environment workspace</span></span></a><nav className="workspace-navigation" aria-label="Workspace views">{benchmark && <button className={showResults ? 'active' : ''} aria-current={showResults ? 'page' : undefined} onClick={() => { if (!bundledSource.current) void loadDefault(); else setView('results'); }}><Icon name="grid" size={14} />Model results<span>{benchmark.models.length}</span></button>}<button className={!showResults ? 'active' : ''} aria-current={!showResults ? 'page' : undefined} onClick={() => setView('replay')}><Icon name="file" size={14} />Replay library<span>{data?.runs.length ?? 0}</span></button></nav><div className="collection-label"><span className="section-label">Replay tasks</span><span className="mono">v0.1.0</span></div><div className="collection-title">Inspection coordination <Icon name="chevron" size={12} /></div><label className="search-input"><Icon name="search" size={14} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search tasks…" aria-label="Search tasks" /><span className="mono">{cases.length}</span></label><div className="split-filters" aria-label="Filter task split">{(['all', 'development', 'evaluation'] as const).map(item => <button key={item} aria-pressed={split === item} onClick={() => setSplit(item)}>{item === 'all' ? 'All' : item === 'development' ? 'Dev' : 'Eval'}</button>)}</div><nav className="case-list" aria-label="Environment tasks">{filteredCases.map(item => <button key={item.case_id} className={`case-row ${!showResults && run?.case_id === item.case_id ? 'active' : ''}`} aria-current={!showResults && run?.case_id === item.case_id ? 'true' : undefined} onClick={() => { const candidate = data?.runs.find(candidate => candidate.case_id === item.case_id && candidate.kind === 'scripted_failure') ?? data?.runs.find(candidate => candidate.case_id === item.case_id); if (candidate) selectRun(candidate); }}><span className="case-top"><code>{item.case_id}</code><span>{item.split === 'development' ? 'dev' : 'eval'}</span></span><strong>{item.case_title.split(' · ')[0]}</strong></button>)}{!filteredCases.length && !loading && <p className="no-tasks">No matching tasks.</p>}</nav><div className="rail-footer"><span className="section-label">Independent environment</span><p>Deterministic transaction engine<br />Synthetic cases · objective rewards</p><a href="https://idler.ai/collections/shelflife-e-sim/sample" target="_blank" rel="noreferrer">Interface informed by Idler’s public task viewer <Icon name="external" size={11} /></a></div></aside><div className="main-shell"><header className="topbar"><div className="breadcrumbs"><span>Environments</span><Icon name="chevron" size={11} /><span>DealRoom</span>{showResults ? <><Icon name="chevron" size={11} /><span>Model results</span></> : run && <><Icon name="chevron" size={11} /><code>{run.case_id}</code></>}</div><div className="topbar-actions">{!showResults && inspectUrl && <a className="button subtle" href={inspectUrl} target="_blank" rel="noreferrer" title="Open full model transcript in the local Inspect viewer">Inspect log <Icon name="external" size={13} /></a>}<button className="button" onClick={() => inputRef.current?.click()}><Icon name="upload" size={14} />Import export</button></div></header><main id="main">{replayError && <div className="error-banner" role="alert"><div><strong>Replay update unavailable</strong><p>{replayError}</p><p>Previously loaded records remain visible. The update will retry every 15 seconds.</p></div><button className="button" disabled={refreshing} onClick={() => void refreshBenchmark()}>Retry replay update</button></div>}{!replayError && missingReplayCount > 0 && <div className="issue-banner" role="status">Waiting for {missingReplayCount} recorded {missingReplayCount === 1 ? 'replay' : 'replays'} to finish publishing. Retrying every 15 seconds.</div>}{benchmarkError && <div className="issue-banner" role="alert"><strong>Benchmark update unavailable.</strong> {benchmarkError} <button className="text-link" onClick={() => void refreshBenchmark()}>Retry</button></div>}{error && <div role="alert" className="error-banner"><div><strong>Export could not be loaded</strong><p>{error}</p>{data && <p>The previously loaded export remains available.</p>}</div><button className="button" onClick={() => void loadDefault()}>Reload bundled export</button><button className="icon-button" aria-label="Dismiss error" onClick={() => setError('')}><Icon name="close" size={14} /></button></div>}{!showResults && issueCounts.length > 0 && <div className="issue-banner" role="status"><strong>Some samples did not complete.</strong> {issueCounts.join(' · ')}{typeof data?.summary?.total_samples === 'number' ? ` · ${data.summary.total_samples} total samples` : ''}. These are counted separately from scored replay runs.</div>}
+    {showResults ? <BenchmarkResults benchmark={benchmark} runs={data?.runs ?? []} onInspect={item => { selectRun(item); setTab('trajectory'); }} refreshing={refreshing} onRefresh={() => void refreshBenchmark()} /> : loading && !data ? <div className="empty-page" role="status"><span className="loader" /><h1>Loading recorded trajectories</h1></div> : !run || !data ? <div className="empty-page"><Icon name="file" size={30} /><h1>{data ? 'No runs in this export' : 'No trajectory loaded'}</h1><p>Import a DealRoom JSON export to inspect a completed engine run.</p><button className="button" onClick={() => inputRef.current?.click()}>Import export</button><p className="muted">Generate a demonstration with <code>uv run dealroom demo</code>.</p></div> : <><section className="task-header"><div className="task-heading"><div><div className="section-label">{run.case_id} <span> / </span> {run.split}</div><h1>{run.case_title}</h1></div><div className="run-selector"><label htmlFor="run-select">Recorded run</label><select id="run-select" value={run.id} onChange={event => { const next = data.runs.find(item => item.id === event.target.value); if (next) selectRun(next); }}>{data.runs.filter(item => item.case_id === run.case_id).map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></div></div><div className="run-metadata"><Badge>{kindLabels[run.kind]}</Badge><span>Model <code>{run.provenance?.model ?? 'Not recorded'}</code></span><span>Actions <strong>{run.steps.filter(step => step.action !== null).length}</strong></span><span>Reward <strong className="mono">{reward(run.score.success)}</strong></span><span className="run-id"><code>{run.id}</code></span></div><p className="run-description">{run.description}</p></section><Tabs items={[{ id: 'task', label: 'Task details' }, { id: 'trajectory', label: 'Trajectory', count: run.steps.filter(step => step.action !== null).length }, { id: 'grading', label: 'Grading' }, { id: 'compare', label: 'Compare', disabled: !pair }]} value={tab} onChange={setTab} label="Environment workspace" className="main-tabs" /><div className="main-content" role="tabpanel" aria-label={tab === 'task' ? 'Task details' : humanize(tab)}>{tab === 'trajectory' && <Trajectory key={run.id} run={run} position={Math.min(position, run.steps.length - 1)} setPosition={setPosition} onGrade={() => setTab('grading')} />}{tab === 'task' && <TaskDetails run={run} />}{tab === 'grading' && <Grading run={run} />}{tab === 'compare' && pair && <Comparison key={`${run.id}-${pair.id}`} run={run} pair={pair} onInspect={(item, index) => { selectRun(item, index); setTab('trajectory'); }} />}</div></>}
+    </main><footer className="workspace-footer"><span><span className="status-dot" />{showResults ? `${benchmark.task_count} generated tasks · ${benchmark.models.length} local models · recorded evaluation` : data ? `${data.runs.length} recorded runs · ${source}` : 'Local replay workspace'}</span>{(showResults || data) && <span>Exported {dateTime(showResults ? benchmark.generated_at : data!.generated_at)}</span>}</footer></div></div>;
 }

@@ -15,7 +15,9 @@ from typing import Annotated, Literal
 from inspect_ai import Task, task
 from inspect_ai.agent import AgentPrompt, AgentSubmit, as_solver, react
 from inspect_ai.dataset import Sample
-from inspect_ai.model import GenerateConfig
+from inspect_ai.event import SampleLimitEvent
+from inspect_ai.log import transcript
+from inspect_ai.model import CompactionTrim, GenerateConfig
 from inspect_ai.scorer import Score, Target, mean, scorer
 from inspect_ai.solver import Generate, TaskState, solver
 from inspect_ai.tool import Tool, ToolDef, ToolError, ToolParam, tool
@@ -83,8 +85,22 @@ def typed_parameter(annotation) -> ToolParam:
     return ToolParam.model_validate(normalize(schema))
 
 
-def replay(case_id: str, actions: list[dict]):
-    engine = reset(load_case(case_id))
+def case_for_record(record: dict):
+    """Reconstruct the recorded episode's effective fixture without changing source cases."""
+    case = load_case(record["case_id"])
+    base_fingerprint = record.get("base_fixture_sha256")
+    if base_fingerprint is not None and base_fingerprint != fixture_fingerprint(case):
+        raise ValueError("The base fixture changed after this episode was recorded.")
+    action_limit = record.get("action_limit")
+    if action_limit is not None:
+        if type(action_limit) is not int or action_limit < 1:
+            raise ValueError("Episode action_limit must be a positive integer.")
+        case = case.model_copy(update={"action_limit": action_limit})
+    return case
+
+
+def replay(case_id: str, actions: list[dict], action_limit: int | None = None):
+    engine = reset(case_for_record({"case_id": case_id, "action_limit": action_limit}))
     for action in actions:
         step(engine, action)
     return engine
@@ -120,8 +136,8 @@ def public_index(public: dict, *, include_policy: bool = False) -> dict:
     return {key: public[key] for key in keys}
 
 
-def sample_for(case_id: str) -> Sample:
-    public = observe(reset(load_case(case_id)))
+def sample_for(case_id: str, action_limit: int | None = None) -> Sample:
+    public = observe(reset(case_for_record({"case_id": case_id, "action_limit": action_limit})))
     return Sample(
         id=case_id,
         input=json.dumps(public_index(public, include_policy=True), ensure_ascii=False),
@@ -289,14 +305,23 @@ def tools_for(engine, record: dict) -> tuple[list[Tool], Tool]:
 
 
 @solver
-def coordinate():
+def coordinate(
+    action_limit: int | None = None,
+    end_on_expiry: bool = False,
+    compaction_threshold: int | None = None,
+):
     async def solve(state: TaskState, generate: Generate) -> TaskState:
         case_id = state.metadata["case_id"]
-        case = load_case(case_id)
+        base_case = load_case(case_id)
+        case = case_for_record({"case_id": case_id, "action_limit": action_limit})
         engine = reset(case)
         record = {
             "case_id": case_id,
             "fixture_sha256": fixture_fingerprint(case),
+            "base_fixture_sha256": fixture_fingerprint(base_case),
+            "action_limit": case.action_limit,
+            "end_on_expiry": end_on_expiry,
+            "compaction_threshold": compaction_threshold,
             "actions": [],
             "events": [],
         }
@@ -304,12 +329,22 @@ def coordinate():
         tools, finish = tools_for(engine, record)
 
         async def continue_run(_state):
+            if end_on_expiry and engine.business_status == "expired":
+                record["termination_reason"] = "contract_deadline_expired"
+                return False
             return not getattr(engine, "budget_exhausted", False)
 
         agent = react(
             name="transaction_coordinator",
             prompt=AgentPrompt(
-                instructions=PROMPT,
+                instructions=PROMPT
+                + (
+                    "\nThis evaluation ends the episode immediately if the contractual deadline "
+                    "expires. Complete the required coordination before expiry; no further "
+                    "actions will be requested after the transaction is irreversibly expired.\n"
+                    if end_on_expiry
+                    else ""
+                ),
                 assistant_prompt=None,
                 handoff_prompt=None,
                 submit_prompt=None,
@@ -318,6 +353,9 @@ def coordinate():
             submit=AgentSubmit(name="finish", tool=finish, keep_in_messages=True),
             attempts=1,
             on_continue=continue_run,
+            compaction=CompactionTrim(threshold=compaction_threshold, preserve=0.5, memory=False)
+            if compaction_threshold is not None
+            else None,
         )
         return await as_solver(agent)(state, generate)
 
@@ -328,8 +366,42 @@ def coordinate():
 def transaction_success():
     async def score(state: TaskState, target: Target) -> Score:
         record = state.metadata.get("dealroom", {"actions": []})
-        evaluation = evaluate(replay(state.metadata["case_id"], record["actions"]))
+        evaluation = evaluate(
+            replay(
+                state.metadata["case_id"],
+                record["actions"],
+                action_limit=record.get("action_limit"),
+            ),
+            end_on_expiry=record.get("end_on_expiry") is True
+            and record.get("termination_reason") == "contract_deadline_expired",
+        )
         data = evaluation.model_dump(mode="json")
+        limit_event = next(
+            (event for event in transcript().events if isinstance(event, SampleLimitEvent)),
+            None,
+        )
+        if limit_event is not None:
+            return Score.unscored(
+                reason="sample_limit",
+                answer="unscored",
+                explanation=(
+                    f"Unscored: {limit_event.message}\n"
+                    "The following evaluator snapshot is diagnostic context, not a terminal reward.\n"
+                    + json.dumps(data, indent=2)
+                ),
+                metadata=data,
+            )
+        if evaluation.outcome in {"budget_exhausted", "incomplete"}:
+            return Score.unscored(
+                reason=evaluation.outcome,
+                answer="unscored",
+                explanation=(
+                    "Unscored: the attempt did not reach a completed domain outcome.\n"
+                    "The following evaluator snapshot is diagnostic context, not a terminal reward.\n"
+                    + json.dumps(data, indent=2)
+                ),
+                metadata=data,
+            )
         return Score(
             value=int(data["success"]),
             answer="success" if data["success"] else "failure",
@@ -342,21 +414,39 @@ def transaction_success():
 
 @task
 def dealroom(
-    split: Literal["all", "development", "evaluation"] = "all", case_id: str | None = None
+    split: Literal["all", "development", "evaluation"] = "all",
+    case_id: str | None = None,
+    suite: Literal["curated", "synthetic"] = "curated",
+    action_limit: int | None = None,
+    end_on_expiry: bool = False,
+    compaction_threshold: int | None = None,
 ):
-    """Six curated cases. Pass the provider/model using Inspect's --model option."""
-    ids = [f"case-{i:02d}" for i in range(1, 7)]
-    if split == "development":
-        ids = ids[:2]
-    elif split == "evaluation":
-        ids = ids[2:]
+    """Curated or generated tasks using the same tools, engine, and scorer."""
+    for name, value in (
+        ("action_limit", action_limit),
+        ("compaction_threshold", compaction_threshold),
+    ):
+        if value is not None and (type(value) is not int or value < 1):
+            raise ValueError(f"{name} must be a positive integer when supplied.")
+    if suite == "synthetic":
+        from dealroom.synthesis import suite_case_ids
+
+        ids = suite_case_ids()
+    else:
+        ids = [f"case-{i:02d}" for i in range(1, 7)]
+    if split != "all":
+        ids = [item for item in ids if load_case(item).split == split]
     if case_id is not None:
         if case_id not in ids:
             raise ValueError(f"{case_id!r} is not in split {split!r}")
         ids = [case_id]
     return Task(
-        dataset=[sample_for(i) for i in ids],
-        solver=coordinate(),
+        dataset=[sample_for(i, action_limit=action_limit) for i in ids],
+        solver=coordinate(
+            action_limit=action_limit,
+            end_on_expiry=end_on_expiry,
+            compaction_threshold=compaction_threshold,
+        ),
         scorer=transaction_success(),
         config=GenerateConfig(parallel_tool_calls=False, max_tokens=2048, temperature=0),
         token_limit=100_000,
@@ -367,7 +457,7 @@ def dealroom(
         name="dealroom",
         display_name="DealRoom · evidence-based transaction coordination",
         version="0.1.0",
-        metadata={"benchmark": "six curated synthetic cases", "engine_version": "0.1.0"},
+        metadata={"benchmark": suite, "engine_version": "0.1.0"},
         viewer=ViewerConfig(
             task_samples_view=TaskSamplesView(
                 name="Transaction outcomes",

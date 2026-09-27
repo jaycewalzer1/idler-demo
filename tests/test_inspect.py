@@ -1,6 +1,7 @@
 """Exercise Inspect's actual agent, registered tools, scorer and public log API."""
 
 import json
+import math
 from pathlib import Path
 
 import pytest
@@ -161,6 +162,11 @@ def test_execution_error_and_budget_counts_preserve_denominator(mode, tmp_path):
     log = inspect_eval(task, model=model, log_dir=str(tmp_path / "logs"), display="none")[0]
     sample = log.samples[0]
     assert sample.limit if mode == "limit" else sample.error
+    if mode == "limit":
+        assert math.isnan(sample.scores["transaction_success"].value)
+        assert sample.scores["transaction_success"].reason == "sample_limit"
+    else:
+        assert not sample.scores
     bundle = export_logs([Path(log.location)], tmp_path / "runs.json")
     assert bundle["summary"]["total_samples"] == 1
     assert bundle["summary"]["budget_exhaustions" if mode == "limit" else "execution_errors"] == 1

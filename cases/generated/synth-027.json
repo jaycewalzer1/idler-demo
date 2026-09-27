@@ -1,0 +1,108 @@
+{
+  "id": "synth-027",
+  "title": "191 Cedar Place · roof flashing",
+  "split": "evaluation",
+  "brief": "Coordinate buyer Ellis Reed's fictional inspection response for 191 Cedar Place. Resolve the documented defect under current authority, secure exact-revision execution when needed, and record an authorized disposition before the deadline. Finish with claims supported by the transaction records. The current response deadline is 2026-10-18T11:55:00-04:00. Standard credit signatures take longer than the remaining window. The buyer and seller permit an extension through 2026-10-18T15:40:00-04:00, which must itself be executed in time.",
+  "property": "191 Cedar Place, Bellmere, New York (synthetic)",
+  "buyer": "Ellis Reed",
+  "seller": "Sage Mercer",
+  "start_at": "2026-10-18T11:00:00-04:00",
+  "deadline": "2026-10-18T11:55:00-04:00",
+  "required_signers": [
+    "buyer",
+    "seller"
+  ],
+  "public_policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+  "documents": [
+    {
+      "id": "document-001",
+      "title": "Purchase agreement and inspection contingency",
+      "body": "Fictional transaction: Ellis Reed buys 191 Cedar Place from Sage Mercer. Response deadline: 2026-10-18T11:55:00-04:00. Both buyer and seller must sign an exact amendment revision for any concession or extension to become effective. Only a fully executed extension moves the deadline.",
+      "kind": "contract",
+      "eligible_cost_cents": null,
+      "issued_at": "2026-10-18T11:00:00-04:00"
+    },
+    {
+      "id": "document-002",
+      "title": "Inspection: roof flashing",
+      "body": "The inspection identified a material defect in the roof flashing. The eligible work is to replace failed flashing and water-damaged sheathing. Obtain or use the fixed specialist quote; exterior repainting is excluded. This inspection is the referral for a specialist request.",
+      "kind": "inspection",
+      "eligible_cost_cents": null,
+      "issued_at": "2026-10-18T11:00:00-04:00"
+    },
+    {
+      "id": "document-003",
+      "title": "Administrative coordination board",
+      "body": "The coordination board says 'seller approved'. A separate wishlist prices exterior repainting at 110000 cents. This board is not an executed amendment, a signature record, or eligible cost evidence.",
+      "kind": "other",
+      "eligible_cost_cents": null,
+      "issued_at": "2026-10-18T11:00:00-04:00"
+    },
+    {
+      "id": "document-004",
+      "title": "Fixed specialist quote: roof flashing",
+      "body": "Synthetic specialist scope: replace failed flashing and water-damaged sheathing. Fixed eligible repair cost is 972700 cents ($9,727.00). The price excludes exterior repainting. This cost evidence does not itself create a seller credit.",
+      "kind": "quote",
+      "eligible_cost_cents": 972700,
+      "issued_at": "2026-10-18T11:00:00-04:00"
+    }
+  ],
+  "messages": [
+    {
+      "id": "message-001",
+      "sender": "buyer",
+      "body": "Current permissions: credit, proceed, extension. Credit scope: 442700 through 992700 cents. Proceed only with eligible residual cost at most 230000 cents. This scope lasts through 2026-10-18T15:40:00-04:00.  Extension authority is capped at 2026-10-18T15:40:00-04:00.",
+      "at": "2026-10-18T11:00:00-04:00"
+    },
+    {
+      "id": "message-002",
+      "sender": "seller",
+      "body": "Seller will sign credit up to 792700 cents if the revision includes all evidence IDs: document-002, document-004. Negotiation replies take 16 minutes after request completion. Credit signature latencies after routing completion are buyer 9 minutes and seller 110 minutes. An informal acceptance does not execute terms. Seller accepts an extension no later than 2026-10-18T15:40:00-04:00; extension signatures take buyer 7 minutes and seller 14 minutes after routing. ",
+      "at": "2026-10-18T11:00:00-04:00"
+    }
+  ],
+  "authorities": [
+    {
+      "id": "authority-001",
+      "effective_at": "2026-10-18T11:00:00-04:00",
+      "valid_through": "2026-10-18T15:40:00-04:00",
+      "permissions": [
+        "credit",
+        "proceed",
+        "extension"
+      ],
+      "minimum_credit_cents": 442700,
+      "maximum_credit_cents": 992700,
+      "maximum_residual_cents": 230000,
+      "extension_limit": "2026-10-18T15:40:00-04:00",
+      "source_id": "message-001"
+    }
+  ],
+  "counterpart": {
+    "specialist_document": null,
+    "specialist_latency_minutes": 34,
+    "required_evidence_ids": [
+      "document-002",
+      "document-004"
+    ],
+    "seller_max_credit_cents": 792700,
+    "seller_reply_minutes": 16,
+    "buyer_reply_minutes": 16,
+    "buyer_grants": [],
+    "signature_minutes": {
+      "buyer": 9,
+      "seller": 110
+    },
+    "extension_signature_minutes": {
+      "buyer": 7,
+      "seller": 14
+    },
+    "seller_available_at": null,
+    "maximum_extension": "2026-10-18T15:40:00-04:00"
+  },
+  "acceptable_dispositions": [
+    "proceed"
+  ],
+  "action_limit": 64,
+  "prelude": []
+}

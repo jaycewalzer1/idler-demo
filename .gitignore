@@ -7,5 +7,7 @@ web/node_modules/
 web/dist/
 *.tsbuildinfo
 logs/
+models/
+benchmark-state/
 .env
 .DS_Store

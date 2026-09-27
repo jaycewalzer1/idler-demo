@@ -78,12 +78,77 @@ export interface RunExport {
   issues?: { sample_id: string; status: string; reason: string }[];
 }
 
+export type AttemptStatus = 'pending' | 'running' | 'success' | 'failure' | 'error' | 'limit' | 'incomplete';
+
+export interface BenchmarkModel {
+  id: string;
+  label: string;
+  provider?: string;
+  parameters?: string;
+  quantization?: string;
+  digest?: string;
+}
+
+export interface BenchmarkTask {
+  id: string;
+  title: string;
+  split: 'development' | 'evaluation';
+  family?: string;
+}
+
+export interface BenchmarkAttempt {
+  id: string;
+  task_id: string;
+  model_id: string;
+  status: AttemptStatus;
+  run_id?: string;
+  inspect_log?: string;
+  reason?: string;
+  reward?: number | null;
+  started_at?: string;
+  duration_seconds?: number | null;
+  input_tokens?: number | null;
+  output_tokens?: number | null;
+  total_tokens?: number | null;
+  actions?: number;
+  tool_calls?: number;
+  tool_errors?: number;
+  generations?: number;
+}
+
+export interface BenchmarkExport {
+  schema_version: 1;
+  id: string;
+  title: string;
+  generated_at: string;
+  status: 'running' | 'complete' | 'interrupted';
+  seed: number;
+  task_count: number;
+  models: BenchmarkModel[];
+  tasks: BenchmarkTask[];
+  attempts: BenchmarkAttempt[];
+  config?: { temperature?: number; max_messages?: number; max_tokens?: number; max_turns?: number; seed?: number; thinking?: boolean; context_window?: number; output_tokens_per_turn?: number; time_limit_seconds?: number; notes?: string };
+}
+
+export const attemptStatuses: AttemptStatus[] = ['success', 'failure', 'error', 'limit', 'incomplete', 'running', 'pending'];
+
+export function inspectLogUrl(log: string): string {
+  return `http://127.0.0.1:7575/#/tasks/${log.split(/[\\/]/).map(encodeURIComponent).join('/')}`;
+}
+
+export function missingBenchmarkReplays(benchmark: BenchmarkExport | null, replay: RunExport | null): string[] {
+  if (!benchmark) return [];
+  const available = new Set(replay?.runs.map(run => run.id) ?? []);
+  return [...new Set(benchmark.attempts.flatMap(attempt => attempt.run_id && !available.has(attempt.run_id) ? [attempt.run_id] : []))];
+}
+
 const kinds = ['scripted_failure', 'repaired_script', 'fixture_witness', 'recorded_model'];
 const object = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const text = (value: unknown): value is string => typeof value === 'string';
 const number = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 const stringArray = (value: unknown): boolean => Array.isArray(value) && value.every(text);
 const date = (value: unknown): boolean => text(value) && !Number.isNaN(Date.parse(value));
+const timestamp = (value: unknown): boolean => text(value) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/i.test(value) && date(value);
 
 function diagnostics(value: unknown): boolean {
   return Array.isArray(value) && value.every(d => object(d) && text(d.predicate) && typeof d.passed === 'boolean' && text(d.reason) && stringArray(d.evidence));
@@ -137,4 +202,59 @@ export function parseExport(value: unknown): RunExport {
     ids.add(run.id);
   }
   return value as unknown as RunExport;
+}
+
+export function parseBenchmark(value: unknown): BenchmarkExport {
+  if (!object(value) || value.schema_version !== 1 || !text(value.id) || !text(value.title)
+    || !date(value.generated_at) || !['running', 'complete', 'interrupted'].includes(String(value.status))
+    || !number(value.seed) || !number(value.task_count) || !Array.isArray(value.models) || !value.models.length
+    || !Array.isArray(value.tasks) || value.tasks.length !== value.task_count || !Array.isArray(value.attempts)) {
+    throw new Error('The benchmark export has invalid metadata. Regenerate benchmark.json with the DealRoom benchmark runner.');
+  }
+  const modelIds = new Set<string>();
+  for (const model of value.models) {
+    if (!object(model) || !text(model.id) || !text(model.label) || modelIds.has(model.id)
+      || !['provider', 'parameters', 'quantization', 'digest'].every(key => model[key] === undefined || text(model[key]))) {
+      throw new Error('The benchmark export has invalid or duplicate models.');
+    }
+    modelIds.add(model.id);
+  }
+  const taskIds = new Set<string>();
+  for (const task of value.tasks) {
+    if (!object(task) || !text(task.id) || !text(task.title) || taskIds.has(task.id)
+      || !['development', 'evaluation'].includes(String(task.split)) || (task.family !== undefined && !text(task.family))) {
+      throw new Error('The benchmark export has invalid or duplicate tasks.');
+    }
+    taskIds.add(task.id);
+  }
+  const attemptIds = new Set<string>();
+  const pairs = new Set<string>();
+  for (const attempt of value.attempts) {
+    if (!object(attempt) || !text(attempt.id) || attemptIds.has(attempt.id)
+      || !text(attempt.task_id) || !taskIds.has(attempt.task_id) || !text(attempt.model_id) || !modelIds.has(attempt.model_id)
+      || !attemptStatuses.includes(attempt.status as AttemptStatus)
+      || (attempt.started_at !== undefined && !timestamp(attempt.started_at))
+      || !['actions', 'tool_calls', 'tool_errors', 'generations'].every(key => attempt[key] === undefined || (number(attempt[key]) && Number.isSafeInteger(attempt[key]) && Number(attempt[key]) >= 0))
+      || !['run_id', 'inspect_log', 'reason'].every(key => attempt[key] === undefined || text(attempt[key]))
+      || !['reward', 'duration_seconds', 'input_tokens', 'output_tokens', 'total_tokens'].every(key => attempt[key] === undefined || attempt[key] === null || (number(attempt[key]) && Number(attempt[key]) >= 0))) {
+      throw new Error('The benchmark export has an invalid attempt or references an unknown task or model.');
+    }
+    if ((attempt.status === 'success' && attempt.reward !== 1)
+      || (attempt.status === 'failure' && attempt.reward !== 0)
+      || (!['success', 'failure'].includes(String(attempt.status)) && attempt.reward !== undefined && attempt.reward !== null)) {
+      throw new Error('Benchmark rewards must match outcomes: success requires reward 1, scored failure requires reward 0, and unscored attempts cannot have a reward.');
+    }
+    const pair = JSON.stringify([attempt.task_id, attempt.model_id]);
+    if (pairs.has(pair)) throw new Error('The benchmark export contains duplicate task/model attempts. Export a single evaluation per pair.');
+    pairs.add(pair);
+    attemptIds.add(attempt.id);
+  }
+  const config = value.config;
+  if (config !== undefined && (!object(config)
+    || !['temperature', 'max_messages', 'max_tokens', 'max_turns', 'seed', 'context_window', 'output_tokens_per_turn', 'time_limit_seconds'].every(key => config[key] === undefined || number(config[key]))
+    || (config.thinking !== undefined && typeof config.thinking !== 'boolean')
+    || (config.notes !== undefined && !text(config.notes)))) {
+    throw new Error('The benchmark configuration is invalid.');
+  }
+  return value as unknown as BenchmarkExport;
 }
