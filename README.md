@@ -1,6 +1,6 @@
 # DealRoom
 
-A synthetic real estate transaction environment for evaluating tool-using agents, with an evidence-first replay inspector. The agent coordinates inspection findings, repair-credit amendments, signatures, and deadlines. Inspect AI supplies the model integrations, ReAct loop, tool execution, evaluation logs, limits, scorer integration, and full transcript viewer.
+A synthetic real estate transaction environment for evaluating tool-using agents, with a research console for inspecting tasks, tool trajectories, state, and grader evidence. The agent coordinates inspection findings, repair-credit amendments, signatures, and deadlines. Inspect AI supplies the model integrations, ReAct loop, tool execution, evaluation logs, limits, scorer integration, and full transcript viewer.
 
 **The supplied demonstration is offline and scripted.** Six fixture witnesses and one repaired continuation succeed; the deliberately flawed flagship script fails. These are fixture validation and an explanatory demonstration, not model-performance results. No live provider evaluation was run because no provider credentials were available in the build environment.
 
@@ -39,13 +39,19 @@ The delivered archive also includes `logs/demo/` from the verified build. Regene
 
 ## Two-minute walkthrough
 
-1. Select **18 Alder Lane** and **Scripted failure**. At the initial step, effective credit is $0 and the specialist quote is not yet public.
-2. Choose **Go to branch**. The shared prefix obtained the $12,000 specialist quote, negotiated an informal $8,000 credit, and created revision-001. Both required signatures are still absent.
-3. Choose **Final step**. The flawed script attempted to proceed and confidently claimed execution. The engine rejected proceeding: $0 credit leaves $12,000 residual against the buyer's $5,000 limit. Reviewer-only diagnostics expose the unsupported signature and final-report claims.
-4. Inspect the failed/repaired comparison, then switch to **Repaired script** and its final step. The continuation routed the same immutable revision, waited for both signatures, read the envelope, and proceeded. Effective credit is $8,000; residual is $4,000; terminal reward is 1.
-5. Move backward and forward to see documents, messages, signer states, and the simulated clock change. The common prefix is reset and replayed, with full state equality asserted at the branch. Comparison positions align by action offset after that boundary, not by wall-clock time.
+1. The console opens **case-01 / 18 Alder Lane**, **Scripted failure**, at its final recorded step. The verifier shows terminal reward **0.000**. The attempt has finished, but its business disposition remains open.
+2. Open **Task details** to inspect the actual task/system prompts, public policy, initial observation, and seven tool schemas recorded by Inspect.
+3. Return to **Trajectory** and select step **7**, the branch boundary. The shared prefix obtained the $12,000 specialist quote, negotiated an informal $8,000 credit, and created revision-001. Both required signatures are absent. Select the subsequent rejected `set_disposition` action to see its real input and engine response.
+4. Open **Grading** for the evidence behind the failed predicates, then **Compare** for the failed/repaired continuations. Inspect the **Repaired script** at its final step: effective credit is $8,000, residual is $4,000, disposition is proceed, and terminal reward is **1.000**.
+5. Use the action list and step controls to see the evidence and clock change. Search or filter the task rail to inspect the other five cases. The common prefix is reset and replayed, with full state equality asserted at the branch. Comparison positions align by action offset after that boundary, not by wall-clock time.
 
 All contractual values, execution statuses, signature records, and diagnostics shown by the page come from Python snapshots. JavaScript formats and selects records; it does not decide legal validity. The terminal result badge describes the entire run; the state cards and reviewer predicates describe the selected step. All names, properties, messages, rules, and organizations are synthetic.
+
+## Interface reference
+
+The visual and information structure is informed by Idler's public [ShelfLife sample viewer](https://idler.ai/collections/shelflife/sample) and [E-Sim rollout viewer](https://idler.ai/collections/shelflife-e-sim/sample): light neutral surfaces, compact navigation, task and system prompts, tool schemas, numbered trajectory records, reward, and grading evidence. DealRoom adapts these public patterns into an original research console. Idler's private internal frontier-lab interface was not available to verify; this is not an exact reproduction of it or an Idler-affiliated product.
+
+The task inspection fields are exported from the canonical Inspect sample and its first model request. They include only the recorded public input, system prompt, and tool schemas. The UI does not invent reasoning traces, live evaluations, training progress, or model-performance statistics. Full model conversations remain in the native Inspect viewer. Mock-provider token accounting, when present in export metadata, is not a measurement of live-provider inference.
 
 ## Cases
 
@@ -102,7 +108,7 @@ Export completed samples from native logs:
 uv run dealroom export logs/model/*.eval --output web/public/model-runs.json
 ```
 
-Open that file using **Open export**, or export to `web/public/runs.json` to replace the default bundle. Export uses Inspect's public `read_eval_log` API and replays recorded actions through the same engine. It verifies the fixture fingerprint and compares replay reward with the canonical Inspect score. Exporting against a changed fixture fails explicitly. Compact actions/events and a fixture hash live in per-sample Inspect metadata; no second model transcript is created.
+Open that file using **Import export**, or export to `web/public/runs.json` to replace the default bundle. Export uses Inspect's public `read_eval_log` API and replays recorded actions through the same engine. It verifies the fixture fingerprint and compares replay reward with the canonical Inspect score. Exporting against a changed fixture fails explicitly. Compact actions/events and a fixture hash live in per-sample Inspect metadata; no second model transcript is created.
 
 Exports retain total planned samples, completed domain outcomes, successes, failures, execution errors, budget exhaustion, and incomplete counts, plus run-level errors/cancellations. Errors, exhausted budgets, and unfinished attempts are excluded from ordinary completed-run replays and listed as issues, preserving the denominator. Supplied scripts are clearly labeled; an unlabelled mock-provider export is also labeled validation, never live-model performance.
 
@@ -127,7 +133,7 @@ npm --prefix web run build
 
 Build verification on September 27, 2026: **53 tests passed**, Ruff passed, and the production frontend built successfully. Eight canonical Inspect logs contain seven successful scripted outcomes and the expected flagship failure, with zero execution errors, limits, or incomplete attempts.
 
-Verified behavior includes every witness and failed/repaired result; prefix equality; initial trap records; old revision and missing signatures; expired/historical authority and authority changes during coordination; late execution; duplicate requests; exact-deadline ordering; extension effects; action limits; concurrent sample isolation; actual public-only model requests; rejected final-claim correction; fixture-change rejection; score/export equality; error and limit denominators; and all seven tools through Inspect. Browser checks covered desktop and 390px widths, default traces, uploads, malformed/empty exports, keyboard navigation, changing evidence, timeline controls, and comparison switching. No browser console errors were observed.
+Verified behavior includes every witness and failed/repaired result; prefix equality; initial trap records; old revision and missing signatures; expired/historical authority and authority changes during coordination; late execution; duplicate requests; exact-deadline ordering; extension effects; action limits; concurrent sample isolation; actual public-only model requests; rejected final-claim correction; fixture-change rejection; score/export equality; error and limit denominators; and all seven tools through Inspect. Research-console browser checks covered desktop and 390px widths, task/tool details, task search and split filters, canonical Inspect deep links, legacy/malformed/empty/incomplete exports, keyboard navigation, changing evidence and signatures, replay controls, and branch-aligned comparison switching. No browser console errors were observed.
 
 ## SilverKey source ledger
 

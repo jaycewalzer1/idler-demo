@@ -53,6 +53,19 @@ export interface Run {
   description: string;
   branch_step?: number;
   paired_run_id?: string;
+  task?: {
+    brief?: string;
+    policy?: string;
+    system_prompt?: string;
+    tools?: { name: string; description: string; parameters: Record<string, unknown> }[];
+    initial_observation?: Record<string, unknown>;
+  };
+  provenance?: {
+    inspect_log?: string;
+    model?: string;
+    source?: string;
+    usage?: Record<string, { input_tokens: number; output_tokens: number; total_tokens: number }>;
+  };
   score: { success: boolean; diagnostics: Diagnostic[] };
   steps: Step[];
 }
@@ -89,6 +102,20 @@ function snapshot(value: unknown): boolean {
       && Array.isArray(a.signatures) && a.signatures.every(s => object(s) && text(s.party) && date(s.time)));
 }
 
+function task(value: unknown): boolean {
+  if (value === undefined) return true;
+  return object(value) && ['brief', 'policy', 'system_prompt'].every(key => value[key] === undefined || text(value[key]))
+    && (value.initial_observation === undefined || object(value.initial_observation))
+    && (value.tools === undefined || (Array.isArray(value.tools) && value.tools.every(tool => object(tool) && text(tool.name) && text(tool.description) && object(tool.parameters))));
+}
+
+function provenance(value: unknown): boolean {
+  if (value === undefined) return true;
+  return object(value) && ['inspect_log', 'model', 'source'].every(key => value[key] === undefined || text(value[key]))
+    && (value.usage === undefined || (object(value.usage) && Object.values(value.usage).every(usage => object(usage)
+      && ['input_tokens', 'output_tokens', 'total_tokens'].every(key => number(usage[key]) && Number(usage[key]) >= 0))));
+}
+
 export function parseExport(value: unknown): RunExport {
   if (!object(value) || value.schema_version !== 1 || !date(value.generated_at) || !Array.isArray(value.runs)) {
     throw new Error('This file is not a DealRoom replay export. Expected schema_version 1, generated_at, and a runs array.');
@@ -99,6 +126,7 @@ export function parseExport(value: unknown): RunExport {
       || !kinds.includes(String(run.kind)) || !['development', 'evaluation'].includes(String(run.split))
       || (run.branch_step !== undefined && (!number(run.branch_step) || run.branch_step < 0))
       || (run.paired_run_id !== undefined && !text(run.paired_run_id))
+      || !task(run.task) || !provenance(run.provenance)
       || !object(run.score) || typeof run.score.success !== 'boolean' || !diagnostics(run.score.diagnostics)
       || !Array.isArray(run.steps) || run.steps.length === 0 || !run.steps.every(s => object(s) && number(s.index) && text(s.label)
         && (s.action === null || object(s.action)) && (s.result === null || object(s.result)) && snapshot(s.state)

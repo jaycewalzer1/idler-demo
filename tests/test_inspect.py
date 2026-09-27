@@ -45,6 +45,12 @@ def test_actual_inspect_tool_loop_and_export(case_id, tmp_path):
     # No second copy of the model transcript is shipped to the frontend.
     assert "messages" not in bundle["runs"][0]
     assert read_eval_log(log.location).samples[0].metadata["dealroom"]["events"]
+    details = bundle["runs"][0]["task"]
+    assert details["initial_observation"] == json.loads(sample.input)
+    assert details["system_prompt"] == sample.messages[0].text
+    assert len(details["tools"]) == 7
+    assert "counterpart" not in details["initial_observation"]
+    assert "acceptable_dispositions" not in details["initial_observation"]
 
 
 def test_failed_repaired_prefix_and_truthful_labels(tmp_path):

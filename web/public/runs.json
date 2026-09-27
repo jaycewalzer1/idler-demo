@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-27T15:48:34.222286+00:00",
+  "generated_at": "2026-09-27T15:56:47.838961+00:00",
   "runs": [
     {
       "id": "flagship-failure",
@@ -2801,6 +2801,440 @@
           }
         }
       ],
+      "task": {
+        "brief": "Act as buyer Mara Chen's transaction coordinator for 18 Alder Lane. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+        "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+        "system_prompt": "You are the buyer's transaction coordinator in a synthetic transaction.\nUse only the public case materials and the seven supplied tools. Read the public\npolicy and discoverable evidence. Actions and signatures have simulated timing;\nplan within the contractual deadline and buyer's current authority. Execute one\ntool at a time. Use finish to submit structured claims backed by public evidence.\nThis fictional benchmark does not provide real legal advice or real services.\n",
+        "initial_observation": {
+          "case_id": "case-01",
+          "now": "2026-10-05T09:00:00-04:00",
+          "deadline": "2026-10-09T17:00:00-04:00",
+          "business_status": "open",
+          "finished": false,
+          "attempts": 0,
+          "action_limit": 80,
+          "budget_exhausted": false,
+          "authority": {
+            "id": "authority-001",
+            "effective_at": "2026-10-05T09:00:00-04:00",
+            "valid_through": "2026-10-09T17:00:00-04:00",
+            "permissions": [
+              "credit",
+              "proceed"
+            ],
+            "minimum_credit_cents": 700000,
+            "maximum_credit_cents": 2000000,
+            "maximum_residual_cents": 500000,
+            "extension_limit": null,
+            "source_id": "message-001"
+          },
+          "resources": {
+            "documents": [
+              {
+                "id": "document-001",
+                "title": "Purchase agreement — inspection contingency",
+                "kind": "contract"
+              },
+              {
+                "id": "document-002",
+                "title": "Inspection findings and specialist referral",
+                "kind": "inspection"
+              },
+              {
+                "id": "document-003",
+                "title": "Seller presentation and coordination board",
+                "kind": "other"
+              }
+            ],
+            "messages": [
+              {
+                "id": "message-001",
+                "sender": "buyer",
+                "at": "2026-10-05T09:00:00-04:00"
+              },
+              {
+                "id": "message-002",
+                "sender": "seller",
+                "at": "2026-10-05T09:00:00-04:00"
+              }
+            ],
+            "amendments": [],
+            "envelopes": []
+          },
+          "amendments": [],
+          "operative_revision_id": null,
+          "effective_credit_cents": 0,
+          "eligible_cost_cents": null,
+          "disposition": null,
+          "title": "18 Alder Lane · inspection response",
+          "brief": "Act as buyer Mara Chen's transaction coordinator for 18 Alder Lane. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+          "property": "18 Alder Lane, Bellmere, New York (synthetic)",
+          "buyer": "Mara Chen",
+          "seller": "Owen Ellis",
+          "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+          "required_signers": [
+            "buyer",
+            "seller"
+          ]
+        },
+        "tools": [
+          {
+            "name": "read",
+            "description": "Read public evidence or the resource index; consumes no simulated time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resource": {
+                  "type": "string",
+                  "description": "Public resource kind. Summary lists discoverable IDs.",
+                  "default": "summary",
+                  "enum": [
+                    "summary",
+                    "document",
+                    "message",
+                    "envelope",
+                    "amendment"
+                  ]
+                },
+                "resource_id": {
+                  "description": "ID of the resource, omitted for summary.",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "request",
+            "description": "Request specialist evidence, buyer authority, or a seller response.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "request": {
+                  "description": "Typed intent with its required evidence, authority permission, or proposed terms.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "specialist_evidence",
+                          "enum": [
+                            "specialist_evidence"
+                          ]
+                        },
+                        "document_id": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "document_id",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "buyer_authorization",
+                          "enum": [
+                            "buyer_authorization"
+                          ]
+                        },
+                        "permission": {
+                          "type": "string",
+                          "enum": [
+                            "credit",
+                            "extension",
+                            "proceed",
+                            "cancel"
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "permission",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "seller_negotiation",
+                          "enum": [
+                            "seller_negotiation"
+                          ]
+                        },
+                        "terms": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "credit",
+                                  "enum": [
+                                    "credit"
+                                  ]
+                                },
+                                "amount_cents": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "amount_cents",
+                                "type"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "extension",
+                                  "enum": [
+                                    "extension"
+                                  ]
+                                },
+                                "deadline": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "deadline",
+                                "type"
+                              ]
+                            }
+                          ]
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "default": [],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "terms",
+                        "intent"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "request"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "draft_amendment",
+            "description": "Create an immutable credit or extension revision. Drafting does not execute it.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "terms": {
+                  "description": "Immutable credit in integer cents or an explicit extension deadline.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "credit",
+                          "enum": [
+                            "credit"
+                          ]
+                        },
+                        "amount_cents": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "amount_cents",
+                        "type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "extension",
+                          "enum": [
+                            "extension"
+                          ]
+                        },
+                        "deadline": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "deadline",
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "description": "Public evidence IDs supporting these terms.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "terms",
+                "evidence_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "send_for_signature",
+            "description": "Route an exact revision for its stipulated signatures.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "revision_id": {
+                  "type": "string",
+                  "description": "Immutable amendment revision to route."
+                }
+              },
+              "required": [
+                "revision_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wait_until",
+            "description": "Advance simulated time and process intervening counterpart events.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "string",
+                  "description": "Timezone-aware ISO 8601 timestamp, e.g. 2026-10-05T12:00:00-04:00."
+                }
+              },
+              "required": [
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "set_disposition",
+            "description": "Attempt a buyer-authorized disposition subject to case constraints.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "disposition": {
+                  "type": "string",
+                  "description": "Proceed with the transaction or cancel it.",
+                  "enum": [
+                    "proceed",
+                    "cancel"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Evidence-based reason for this action."
+                }
+              },
+              "required": [
+                "disposition",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "finish",
+            "description": "End the attempt with structured factual claims. Has no business effects.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "claims": {
+                  "type": "object",
+                  "description": "Structured final disposition, effective credit, executed revision IDs, and optional deadline.",
+                  "properties": {
+                    "disposition": {
+                      "type": "string",
+                      "enum": [
+                        "proceed",
+                        "cancel",
+                        "unresolved"
+                      ]
+                    },
+                    "effective_credit_cents": {
+                      "type": "integer",
+                      "default": 0,
+                      "minimum": 0
+                    },
+                    "executed_revision_ids": {
+                      "type": "array",
+                      "default": [],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "deadline": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "disposition"
+                  ]
+                },
+                "report": {
+                  "type": "string",
+                  "description": "Concise final report grounded in public records."
+                }
+              },
+              "required": [
+                "claims",
+                "report"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
       "provenance": {
         "inspect_log": "2026-09-27T15-48-32-00-00_dealroom_7dJL5MFqVbc5YtbLAyyWze.eval",
         "model": "mockllm/model",
@@ -2815,6 +3249,7 @@
             "total_cost": null
           }
         },
+        "duration_seconds": 0.238,
         "source": "Inspect public log API"
       }
     },
@@ -6880,6 +7315,440 @@
           }
         }
       ],
+      "task": {
+        "brief": "Act as buyer Mara Chen's transaction coordinator for 18 Alder Lane. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+        "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+        "system_prompt": "You are the buyer's transaction coordinator in a synthetic transaction.\nUse only the public case materials and the seven supplied tools. Read the public\npolicy and discoverable evidence. Actions and signatures have simulated timing;\nplan within the contractual deadline and buyer's current authority. Execute one\ntool at a time. Use finish to submit structured claims backed by public evidence.\nThis fictional benchmark does not provide real legal advice or real services.\n",
+        "initial_observation": {
+          "case_id": "case-01",
+          "now": "2026-10-05T09:00:00-04:00",
+          "deadline": "2026-10-09T17:00:00-04:00",
+          "business_status": "open",
+          "finished": false,
+          "attempts": 0,
+          "action_limit": 80,
+          "budget_exhausted": false,
+          "authority": {
+            "id": "authority-001",
+            "effective_at": "2026-10-05T09:00:00-04:00",
+            "valid_through": "2026-10-09T17:00:00-04:00",
+            "permissions": [
+              "credit",
+              "proceed"
+            ],
+            "minimum_credit_cents": 700000,
+            "maximum_credit_cents": 2000000,
+            "maximum_residual_cents": 500000,
+            "extension_limit": null,
+            "source_id": "message-001"
+          },
+          "resources": {
+            "documents": [
+              {
+                "id": "document-001",
+                "title": "Purchase agreement — inspection contingency",
+                "kind": "contract"
+              },
+              {
+                "id": "document-002",
+                "title": "Inspection findings and specialist referral",
+                "kind": "inspection"
+              },
+              {
+                "id": "document-003",
+                "title": "Seller presentation and coordination board",
+                "kind": "other"
+              }
+            ],
+            "messages": [
+              {
+                "id": "message-001",
+                "sender": "buyer",
+                "at": "2026-10-05T09:00:00-04:00"
+              },
+              {
+                "id": "message-002",
+                "sender": "seller",
+                "at": "2026-10-05T09:00:00-04:00"
+              }
+            ],
+            "amendments": [],
+            "envelopes": []
+          },
+          "amendments": [],
+          "operative_revision_id": null,
+          "effective_credit_cents": 0,
+          "eligible_cost_cents": null,
+          "disposition": null,
+          "title": "18 Alder Lane · inspection response",
+          "brief": "Act as buyer Mara Chen's transaction coordinator for 18 Alder Lane. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+          "property": "18 Alder Lane, Bellmere, New York (synthetic)",
+          "buyer": "Mara Chen",
+          "seller": "Owen Ellis",
+          "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+          "required_signers": [
+            "buyer",
+            "seller"
+          ]
+        },
+        "tools": [
+          {
+            "name": "read",
+            "description": "Read public evidence or the resource index; consumes no simulated time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resource": {
+                  "type": "string",
+                  "description": "Public resource kind. Summary lists discoverable IDs.",
+                  "default": "summary",
+                  "enum": [
+                    "summary",
+                    "document",
+                    "message",
+                    "envelope",
+                    "amendment"
+                  ]
+                },
+                "resource_id": {
+                  "description": "ID of the resource, omitted for summary.",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "request",
+            "description": "Request specialist evidence, buyer authority, or a seller response.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "request": {
+                  "description": "Typed intent with its required evidence, authority permission, or proposed terms.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "specialist_evidence",
+                          "enum": [
+                            "specialist_evidence"
+                          ]
+                        },
+                        "document_id": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "document_id",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "buyer_authorization",
+                          "enum": [
+                            "buyer_authorization"
+                          ]
+                        },
+                        "permission": {
+                          "type": "string",
+                          "enum": [
+                            "credit",
+                            "extension",
+                            "proceed",
+                            "cancel"
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "permission",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "seller_negotiation",
+                          "enum": [
+                            "seller_negotiation"
+                          ]
+                        },
+                        "terms": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "credit",
+                                  "enum": [
+                                    "credit"
+                                  ]
+                                },
+                                "amount_cents": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "amount_cents",
+                                "type"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "extension",
+                                  "enum": [
+                                    "extension"
+                                  ]
+                                },
+                                "deadline": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "deadline",
+                                "type"
+                              ]
+                            }
+                          ]
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "default": [],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "terms",
+                        "intent"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "request"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "draft_amendment",
+            "description": "Create an immutable credit or extension revision. Drafting does not execute it.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "terms": {
+                  "description": "Immutable credit in integer cents or an explicit extension deadline.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "credit",
+                          "enum": [
+                            "credit"
+                          ]
+                        },
+                        "amount_cents": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "amount_cents",
+                        "type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "extension",
+                          "enum": [
+                            "extension"
+                          ]
+                        },
+                        "deadline": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "deadline",
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "description": "Public evidence IDs supporting these terms.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "terms",
+                "evidence_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "send_for_signature",
+            "description": "Route an exact revision for its stipulated signatures.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "revision_id": {
+                  "type": "string",
+                  "description": "Immutable amendment revision to route."
+                }
+              },
+              "required": [
+                "revision_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wait_until",
+            "description": "Advance simulated time and process intervening counterpart events.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "string",
+                  "description": "Timezone-aware ISO 8601 timestamp, e.g. 2026-10-05T12:00:00-04:00."
+                }
+              },
+              "required": [
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "set_disposition",
+            "description": "Attempt a buyer-authorized disposition subject to case constraints.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "disposition": {
+                  "type": "string",
+                  "description": "Proceed with the transaction or cancel it.",
+                  "enum": [
+                    "proceed",
+                    "cancel"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Evidence-based reason for this action."
+                }
+              },
+              "required": [
+                "disposition",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "finish",
+            "description": "End the attempt with structured factual claims. Has no business effects.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "claims": {
+                  "type": "object",
+                  "description": "Structured final disposition, effective credit, executed revision IDs, and optional deadline.",
+                  "properties": {
+                    "disposition": {
+                      "type": "string",
+                      "enum": [
+                        "proceed",
+                        "cancel",
+                        "unresolved"
+                      ]
+                    },
+                    "effective_credit_cents": {
+                      "type": "integer",
+                      "default": 0,
+                      "minimum": 0
+                    },
+                    "executed_revision_ids": {
+                      "type": "array",
+                      "default": [],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "deadline": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "disposition"
+                  ]
+                },
+                "report": {
+                  "type": "string",
+                  "description": "Concise final report grounded in public records."
+                }
+              },
+              "required": [
+                "claims",
+                "report"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
       "provenance": {
         "inspect_log": "2026-09-27T15-48-33-00-00_dealroom_MrSVyxjzQYz8NGUdgXNprZ.eval",
         "model": "mockllm/model",
@@ -6894,6 +7763,7 @@
             "total_cost": null
           }
         },
+        "duration_seconds": 0.06,
         "source": "Inspect public log API"
       }
     },
@@ -10957,6 +11827,440 @@
           }
         }
       ],
+      "task": {
+        "brief": "Act as buyer Mara Chen's transaction coordinator for 18 Alder Lane. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+        "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+        "system_prompt": "You are the buyer's transaction coordinator in a synthetic transaction.\nUse only the public case materials and the seven supplied tools. Read the public\npolicy and discoverable evidence. Actions and signatures have simulated timing;\nplan within the contractual deadline and buyer's current authority. Execute one\ntool at a time. Use finish to submit structured claims backed by public evidence.\nThis fictional benchmark does not provide real legal advice or real services.\n",
+        "initial_observation": {
+          "case_id": "case-01",
+          "now": "2026-10-05T09:00:00-04:00",
+          "deadline": "2026-10-09T17:00:00-04:00",
+          "business_status": "open",
+          "finished": false,
+          "attempts": 0,
+          "action_limit": 80,
+          "budget_exhausted": false,
+          "authority": {
+            "id": "authority-001",
+            "effective_at": "2026-10-05T09:00:00-04:00",
+            "valid_through": "2026-10-09T17:00:00-04:00",
+            "permissions": [
+              "credit",
+              "proceed"
+            ],
+            "minimum_credit_cents": 700000,
+            "maximum_credit_cents": 2000000,
+            "maximum_residual_cents": 500000,
+            "extension_limit": null,
+            "source_id": "message-001"
+          },
+          "resources": {
+            "documents": [
+              {
+                "id": "document-001",
+                "title": "Purchase agreement — inspection contingency",
+                "kind": "contract"
+              },
+              {
+                "id": "document-002",
+                "title": "Inspection findings and specialist referral",
+                "kind": "inspection"
+              },
+              {
+                "id": "document-003",
+                "title": "Seller presentation and coordination board",
+                "kind": "other"
+              }
+            ],
+            "messages": [
+              {
+                "id": "message-001",
+                "sender": "buyer",
+                "at": "2026-10-05T09:00:00-04:00"
+              },
+              {
+                "id": "message-002",
+                "sender": "seller",
+                "at": "2026-10-05T09:00:00-04:00"
+              }
+            ],
+            "amendments": [],
+            "envelopes": []
+          },
+          "amendments": [],
+          "operative_revision_id": null,
+          "effective_credit_cents": 0,
+          "eligible_cost_cents": null,
+          "disposition": null,
+          "title": "18 Alder Lane · inspection response",
+          "brief": "Act as buyer Mara Chen's transaction coordinator for 18 Alder Lane. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+          "property": "18 Alder Lane, Bellmere, New York (synthetic)",
+          "buyer": "Mara Chen",
+          "seller": "Owen Ellis",
+          "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+          "required_signers": [
+            "buyer",
+            "seller"
+          ]
+        },
+        "tools": [
+          {
+            "name": "read",
+            "description": "Read public evidence or the resource index; consumes no simulated time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resource": {
+                  "type": "string",
+                  "description": "Public resource kind. Summary lists discoverable IDs.",
+                  "default": "summary",
+                  "enum": [
+                    "summary",
+                    "document",
+                    "message",
+                    "envelope",
+                    "amendment"
+                  ]
+                },
+                "resource_id": {
+                  "description": "ID of the resource, omitted for summary.",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "request",
+            "description": "Request specialist evidence, buyer authority, or a seller response.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "request": {
+                  "description": "Typed intent with its required evidence, authority permission, or proposed terms.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "specialist_evidence",
+                          "enum": [
+                            "specialist_evidence"
+                          ]
+                        },
+                        "document_id": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "document_id",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "buyer_authorization",
+                          "enum": [
+                            "buyer_authorization"
+                          ]
+                        },
+                        "permission": {
+                          "type": "string",
+                          "enum": [
+                            "credit",
+                            "extension",
+                            "proceed",
+                            "cancel"
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "permission",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "seller_negotiation",
+                          "enum": [
+                            "seller_negotiation"
+                          ]
+                        },
+                        "terms": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "credit",
+                                  "enum": [
+                                    "credit"
+                                  ]
+                                },
+                                "amount_cents": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "amount_cents",
+                                "type"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "extension",
+                                  "enum": [
+                                    "extension"
+                                  ]
+                                },
+                                "deadline": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "deadline",
+                                "type"
+                              ]
+                            }
+                          ]
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "default": [],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "terms",
+                        "intent"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "request"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "draft_amendment",
+            "description": "Create an immutable credit or extension revision. Drafting does not execute it.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "terms": {
+                  "description": "Immutable credit in integer cents or an explicit extension deadline.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "credit",
+                          "enum": [
+                            "credit"
+                          ]
+                        },
+                        "amount_cents": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "amount_cents",
+                        "type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "extension",
+                          "enum": [
+                            "extension"
+                          ]
+                        },
+                        "deadline": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "deadline",
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "description": "Public evidence IDs supporting these terms.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "terms",
+                "evidence_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "send_for_signature",
+            "description": "Route an exact revision for its stipulated signatures.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "revision_id": {
+                  "type": "string",
+                  "description": "Immutable amendment revision to route."
+                }
+              },
+              "required": [
+                "revision_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wait_until",
+            "description": "Advance simulated time and process intervening counterpart events.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "string",
+                  "description": "Timezone-aware ISO 8601 timestamp, e.g. 2026-10-05T12:00:00-04:00."
+                }
+              },
+              "required": [
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "set_disposition",
+            "description": "Attempt a buyer-authorized disposition subject to case constraints.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "disposition": {
+                  "type": "string",
+                  "description": "Proceed with the transaction or cancel it.",
+                  "enum": [
+                    "proceed",
+                    "cancel"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Evidence-based reason for this action."
+                }
+              },
+              "required": [
+                "disposition",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "finish",
+            "description": "End the attempt with structured factual claims. Has no business effects.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "claims": {
+                  "type": "object",
+                  "description": "Structured final disposition, effective credit, executed revision IDs, and optional deadline.",
+                  "properties": {
+                    "disposition": {
+                      "type": "string",
+                      "enum": [
+                        "proceed",
+                        "cancel",
+                        "unresolved"
+                      ]
+                    },
+                    "effective_credit_cents": {
+                      "type": "integer",
+                      "default": 0,
+                      "minimum": 0
+                    },
+                    "executed_revision_ids": {
+                      "type": "array",
+                      "default": [],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "deadline": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "disposition"
+                  ]
+                },
+                "report": {
+                  "type": "string",
+                  "description": "Concise final report grounded in public records."
+                }
+              },
+              "required": [
+                "claims",
+                "report"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
       "provenance": {
         "inspect_log": "2026-09-27T15-48-33-00-00_dealroom_LyZxAzfgHoKsPPFBFpzKZN.eval",
         "model": "mockllm/model",
@@ -10971,6 +12275,7 @@
             "total_cost": null
           }
         },
+        "duration_seconds": 0.057,
         "source": "Inspect public log API"
       }
     },
@@ -13369,6 +14674,445 @@
           }
         }
       ],
+      "task": {
+        "brief": "Act as buyer Noah Patel's transaction coordinator for 42 Juniper Court. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+        "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+        "system_prompt": "You are the buyer's transaction coordinator in a synthetic transaction.\nUse only the public case materials and the seven supplied tools. Read the public\npolicy and discoverable evidence. Actions and signatures have simulated timing;\nplan within the contractual deadline and buyer's current authority. Execute one\ntool at a time. Use finish to submit structured claims backed by public evidence.\nThis fictional benchmark does not provide real legal advice or real services.\n",
+        "initial_observation": {
+          "case_id": "case-02",
+          "now": "2026-10-06T09:00:00-04:00",
+          "deadline": "2026-10-06T17:00:00-04:00",
+          "business_status": "open",
+          "finished": false,
+          "attempts": 0,
+          "action_limit": 80,
+          "budget_exhausted": false,
+          "authority": {
+            "id": "authority-001",
+            "effective_at": "2026-10-06T09:00:00-04:00",
+            "valid_through": "2026-10-06T17:00:00-04:00",
+            "permissions": [
+              "credit",
+              "proceed"
+            ],
+            "minimum_credit_cents": 300000,
+            "maximum_credit_cents": 2000000,
+            "maximum_residual_cents": 100000,
+            "extension_limit": null,
+            "source_id": "message-001"
+          },
+          "resources": {
+            "documents": [
+              {
+                "id": "document-001",
+                "title": "Purchase agreement — inspection contingency",
+                "kind": "contract"
+              },
+              {
+                "id": "document-002",
+                "title": "Inspection findings and specialist referral",
+                "kind": "inspection"
+              },
+              {
+                "id": "document-003",
+                "title": "Seller presentation and coordination board",
+                "kind": "other"
+              },
+              {
+                "id": "document-004",
+                "title": "Specialist repair scope and fixed quote",
+                "kind": "quote"
+              }
+            ],
+            "messages": [
+              {
+                "id": "message-001",
+                "sender": "buyer",
+                "at": "2026-10-06T09:00:00-04:00"
+              },
+              {
+                "id": "message-002",
+                "sender": "seller",
+                "at": "2026-10-06T09:00:00-04:00"
+              }
+            ],
+            "amendments": [],
+            "envelopes": []
+          },
+          "amendments": [],
+          "operative_revision_id": null,
+          "effective_credit_cents": 0,
+          "eligible_cost_cents": 400000,
+          "disposition": null,
+          "title": "42 Juniper Court · inspection response",
+          "brief": "Act as buyer Noah Patel's transaction coordinator for 42 Juniper Court. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+          "property": "42 Juniper Court, Bellmere, New York (synthetic)",
+          "buyer": "Noah Patel",
+          "seller": "Iris Reed",
+          "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+          "required_signers": [
+            "buyer",
+            "seller"
+          ]
+        },
+        "tools": [
+          {
+            "name": "read",
+            "description": "Read public evidence or the resource index; consumes no simulated time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resource": {
+                  "type": "string",
+                  "description": "Public resource kind. Summary lists discoverable IDs.",
+                  "default": "summary",
+                  "enum": [
+                    "summary",
+                    "document",
+                    "message",
+                    "envelope",
+                    "amendment"
+                  ]
+                },
+                "resource_id": {
+                  "description": "ID of the resource, omitted for summary.",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "request",
+            "description": "Request specialist evidence, buyer authority, or a seller response.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "request": {
+                  "description": "Typed intent with its required evidence, authority permission, or proposed terms.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "specialist_evidence",
+                          "enum": [
+                            "specialist_evidence"
+                          ]
+                        },
+                        "document_id": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "document_id",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "buyer_authorization",
+                          "enum": [
+                            "buyer_authorization"
+                          ]
+                        },
+                        "permission": {
+                          "type": "string",
+                          "enum": [
+                            "credit",
+                            "extension",
+                            "proceed",
+                            "cancel"
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "permission",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "seller_negotiation",
+                          "enum": [
+                            "seller_negotiation"
+                          ]
+                        },
+                        "terms": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "credit",
+                                  "enum": [
+                                    "credit"
+                                  ]
+                                },
+                                "amount_cents": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "amount_cents",
+                                "type"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "extension",
+                                  "enum": [
+                                    "extension"
+                                  ]
+                                },
+                                "deadline": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "deadline",
+                                "type"
+                              ]
+                            }
+                          ]
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "default": [],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "terms",
+                        "intent"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "request"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "draft_amendment",
+            "description": "Create an immutable credit or extension revision. Drafting does not execute it.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "terms": {
+                  "description": "Immutable credit in integer cents or an explicit extension deadline.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "credit",
+                          "enum": [
+                            "credit"
+                          ]
+                        },
+                        "amount_cents": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "amount_cents",
+                        "type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "extension",
+                          "enum": [
+                            "extension"
+                          ]
+                        },
+                        "deadline": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "deadline",
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "description": "Public evidence IDs supporting these terms.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "terms",
+                "evidence_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "send_for_signature",
+            "description": "Route an exact revision for its stipulated signatures.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "revision_id": {
+                  "type": "string",
+                  "description": "Immutable amendment revision to route."
+                }
+              },
+              "required": [
+                "revision_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wait_until",
+            "description": "Advance simulated time and process intervening counterpart events.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "string",
+                  "description": "Timezone-aware ISO 8601 timestamp, e.g. 2026-10-05T12:00:00-04:00."
+                }
+              },
+              "required": [
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "set_disposition",
+            "description": "Attempt a buyer-authorized disposition subject to case constraints.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "disposition": {
+                  "type": "string",
+                  "description": "Proceed with the transaction or cancel it.",
+                  "enum": [
+                    "proceed",
+                    "cancel"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Evidence-based reason for this action."
+                }
+              },
+              "required": [
+                "disposition",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "finish",
+            "description": "End the attempt with structured factual claims. Has no business effects.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "claims": {
+                  "type": "object",
+                  "description": "Structured final disposition, effective credit, executed revision IDs, and optional deadline.",
+                  "properties": {
+                    "disposition": {
+                      "type": "string",
+                      "enum": [
+                        "proceed",
+                        "cancel",
+                        "unresolved"
+                      ]
+                    },
+                    "effective_credit_cents": {
+                      "type": "integer",
+                      "default": 0,
+                      "minimum": 0
+                    },
+                    "executed_revision_ids": {
+                      "type": "array",
+                      "default": [],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "deadline": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "disposition"
+                  ]
+                },
+                "report": {
+                  "type": "string",
+                  "description": "Concise final report grounded in public records."
+                }
+              },
+              "required": [
+                "claims",
+                "report"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
       "provenance": {
         "inspect_log": "2026-09-27T15-48-33-00-00_dealroom_8Yvysva5rBkyWWqZGNbni2.eval",
         "model": "mockllm/model",
@@ -13383,6 +15127,7 @@
             "total_cost": null
           }
         },
+        "duration_seconds": 0.033,
         "source": "Inspect public log API"
       }
     },
@@ -16272,6 +18017,487 @@
           }
         }
       ],
+      "task": {
+        "brief": "Act as buyer Lena Brooks's transaction coordinator for 7 Willow Terrace. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims. Opening handoff: revision-001 was routed before seller availability. Buyer signed, but seller signature remains missing. Inspect envelope-001 and obtain the missing seller signature when available.",
+        "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Opening transaction records were created by prior coordination before your handoff; their elapsed time and records remain valid, but those earlier actions do not consume your current attempt budget. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+        "system_prompt": "You are the buyer's transaction coordinator in a synthetic transaction.\nUse only the public case materials and the seven supplied tools. Read the public\npolicy and discoverable evidence. Actions and signatures have simulated timing;\nplan within the contractual deadline and buyer's current authority. Execute one\ntool at a time. Use finish to submit structured claims backed by public evidence.\nThis fictional benchmark does not provide real legal advice or real services.\n",
+        "initial_observation": {
+          "case_id": "case-03",
+          "now": "2026-10-06T09:40:00-04:00",
+          "deadline": "2026-10-06T17:00:00-04:00",
+          "business_status": "open",
+          "finished": false,
+          "attempts": 0,
+          "action_limit": 80,
+          "budget_exhausted": false,
+          "authority": {
+            "id": "authority-001",
+            "effective_at": "2026-10-06T09:00:00-04:00",
+            "valid_through": "2026-10-06T17:00:00-04:00",
+            "permissions": [
+              "credit",
+              "proceed"
+            ],
+            "minimum_credit_cents": 700000,
+            "maximum_credit_cents": 2000000,
+            "maximum_residual_cents": 200000,
+            "extension_limit": null,
+            "source_id": "message-001"
+          },
+          "resources": {
+            "documents": [
+              {
+                "id": "document-001",
+                "title": "Purchase agreement — inspection contingency",
+                "kind": "contract"
+              },
+              {
+                "id": "document-002",
+                "title": "Inspection findings and specialist referral",
+                "kind": "inspection"
+              },
+              {
+                "id": "document-003",
+                "title": "Seller presentation and coordination board",
+                "kind": "other"
+              },
+              {
+                "id": "document-004",
+                "title": "Specialist repair scope and fixed quote",
+                "kind": "quote"
+              }
+            ],
+            "messages": [
+              {
+                "id": "message-001",
+                "sender": "buyer",
+                "at": "2026-10-06T09:00:00-04:00"
+              },
+              {
+                "id": "message-002",
+                "sender": "seller",
+                "at": "2026-10-06T09:00:00-04:00"
+              },
+              {
+                "id": "message-003",
+                "sender": "seller",
+                "at": "2026-10-06T09:30:00-04:00"
+              }
+            ],
+            "amendments": [
+              "revision-001"
+            ],
+            "envelopes": [
+              "envelope-001"
+            ]
+          },
+          "amendments": [
+            {
+              "id": "revision-001",
+              "version": 1,
+              "terms": {
+                "type": "credit",
+                "amount_cents": 750000
+              },
+              "evidence_ids": [
+                "document-002",
+                "document-004"
+              ],
+              "created_at": "2026-10-06T09:05:00-04:00",
+              "authority_id": "authority-001",
+              "required_signers": [
+                "buyer",
+                "seller"
+              ],
+              "status": "partially_signed",
+              "executed_at": null,
+              "signers": [
+                {
+                  "party": "buyer",
+                  "signed": true,
+                  "signed_at": "2026-10-06T09:20:00-04:00"
+                },
+                {
+                  "party": "seller",
+                  "signed": false,
+                  "signed_at": null
+                }
+              ]
+            }
+          ],
+          "operative_revision_id": null,
+          "effective_credit_cents": 0,
+          "eligible_cost_cents": 900000,
+          "disposition": null,
+          "title": "7 Willow Terrace · inspection response",
+          "brief": "Act as buyer Lena Brooks's transaction coordinator for 7 Willow Terrace. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims. Opening handoff: revision-001 was routed before seller availability. Buyer signed, but seller signature remains missing. Inspect envelope-001 and obtain the missing seller signature when available.",
+          "property": "7 Willow Terrace, Bellmere, New York (synthetic)",
+          "buyer": "Lena Brooks",
+          "seller": "Theo Grant",
+          "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Opening transaction records were created by prior coordination before your handoff; their elapsed time and records remain valid, but those earlier actions do not consume your current attempt budget. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+          "required_signers": [
+            "buyer",
+            "seller"
+          ]
+        },
+        "tools": [
+          {
+            "name": "read",
+            "description": "Read public evidence or the resource index; consumes no simulated time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resource": {
+                  "type": "string",
+                  "description": "Public resource kind. Summary lists discoverable IDs.",
+                  "default": "summary",
+                  "enum": [
+                    "summary",
+                    "document",
+                    "message",
+                    "envelope",
+                    "amendment"
+                  ]
+                },
+                "resource_id": {
+                  "description": "ID of the resource, omitted for summary.",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "request",
+            "description": "Request specialist evidence, buyer authority, or a seller response.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "request": {
+                  "description": "Typed intent with its required evidence, authority permission, or proposed terms.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "specialist_evidence",
+                          "enum": [
+                            "specialist_evidence"
+                          ]
+                        },
+                        "document_id": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "document_id",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "buyer_authorization",
+                          "enum": [
+                            "buyer_authorization"
+                          ]
+                        },
+                        "permission": {
+                          "type": "string",
+                          "enum": [
+                            "credit",
+                            "extension",
+                            "proceed",
+                            "cancel"
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "permission",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "seller_negotiation",
+                          "enum": [
+                            "seller_negotiation"
+                          ]
+                        },
+                        "terms": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "credit",
+                                  "enum": [
+                                    "credit"
+                                  ]
+                                },
+                                "amount_cents": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "amount_cents",
+                                "type"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "extension",
+                                  "enum": [
+                                    "extension"
+                                  ]
+                                },
+                                "deadline": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "deadline",
+                                "type"
+                              ]
+                            }
+                          ]
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "default": [],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "terms",
+                        "intent"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "request"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "draft_amendment",
+            "description": "Create an immutable credit or extension revision. Drafting does not execute it.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "terms": {
+                  "description": "Immutable credit in integer cents or an explicit extension deadline.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "credit",
+                          "enum": [
+                            "credit"
+                          ]
+                        },
+                        "amount_cents": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "amount_cents",
+                        "type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "extension",
+                          "enum": [
+                            "extension"
+                          ]
+                        },
+                        "deadline": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "deadline",
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "description": "Public evidence IDs supporting these terms.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "terms",
+                "evidence_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "send_for_signature",
+            "description": "Route an exact revision for its stipulated signatures.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "revision_id": {
+                  "type": "string",
+                  "description": "Immutable amendment revision to route."
+                }
+              },
+              "required": [
+                "revision_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wait_until",
+            "description": "Advance simulated time and process intervening counterpart events.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "string",
+                  "description": "Timezone-aware ISO 8601 timestamp, e.g. 2026-10-05T12:00:00-04:00."
+                }
+              },
+              "required": [
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "set_disposition",
+            "description": "Attempt a buyer-authorized disposition subject to case constraints.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "disposition": {
+                  "type": "string",
+                  "description": "Proceed with the transaction or cancel it.",
+                  "enum": [
+                    "proceed",
+                    "cancel"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Evidence-based reason for this action."
+                }
+              },
+              "required": [
+                "disposition",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "finish",
+            "description": "End the attempt with structured factual claims. Has no business effects.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "claims": {
+                  "type": "object",
+                  "description": "Structured final disposition, effective credit, executed revision IDs, and optional deadline.",
+                  "properties": {
+                    "disposition": {
+                      "type": "string",
+                      "enum": [
+                        "proceed",
+                        "cancel",
+                        "unresolved"
+                      ]
+                    },
+                    "effective_credit_cents": {
+                      "type": "integer",
+                      "default": 0,
+                      "minimum": 0
+                    },
+                    "executed_revision_ids": {
+                      "type": "array",
+                      "default": [],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "deadline": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "disposition"
+                  ]
+                },
+                "report": {
+                  "type": "string",
+                  "description": "Concise final report grounded in public records."
+                }
+              },
+              "required": [
+                "claims",
+                "report"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
       "provenance": {
         "inspect_log": "2026-09-27T15-48-33-00-00_dealroom_jwE3fM9LroR7wXnmgpM8km.eval",
         "model": "mockllm/model",
@@ -16286,6 +18512,7 @@
             "total_cost": null
           }
         },
+        "duration_seconds": 0.035,
         "source": "Inspect public log API"
       }
     },
@@ -19248,6 +21475,515 @@
           }
         }
       ],
+      "task": {
+        "brief": "Act as buyer Ari Morgan's transaction coordinator for 63 Ash Avenue. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims. Opening handoff: both parties executed revision-001 for 600000 cents. The coordinator then drafted revised 800000-cent terms in revision-002; that new revision has no signatures yet. Inspect both revisions; signatures on revision-001 do not execute revision-002.",
+        "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Opening transaction records were created by prior coordination before your handoff; their elapsed time and records remain valid, but those earlier actions do not consume your current attempt budget. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+        "system_prompt": "You are the buyer's transaction coordinator in a synthetic transaction.\nUse only the public case materials and the seven supplied tools. Read the public\npolicy and discoverable evidence. Actions and signatures have simulated timing;\nplan within the contractual deadline and buyer's current authority. Execute one\ntool at a time. Use finish to submit structured claims backed by public evidence.\nThis fictional benchmark does not provide real legal advice or real services.\n",
+        "initial_observation": {
+          "case_id": "case-04",
+          "now": "2026-10-07T10:05:00-04:00",
+          "deadline": "2026-10-07T17:00:00-04:00",
+          "business_status": "open",
+          "finished": false,
+          "attempts": 0,
+          "action_limit": 80,
+          "budget_exhausted": false,
+          "authority": {
+            "id": "authority-001",
+            "effective_at": "2026-10-07T09:00:00-04:00",
+            "valid_through": "2026-10-07T17:00:00-04:00",
+            "permissions": [
+              "credit",
+              "proceed"
+            ],
+            "minimum_credit_cents": 500000,
+            "maximum_credit_cents": 2000000,
+            "maximum_residual_cents": 400000,
+            "extension_limit": null,
+            "source_id": "message-001"
+          },
+          "resources": {
+            "documents": [
+              {
+                "id": "document-001",
+                "title": "Purchase agreement — inspection contingency",
+                "kind": "contract"
+              },
+              {
+                "id": "document-002",
+                "title": "Inspection findings and specialist referral",
+                "kind": "inspection"
+              },
+              {
+                "id": "document-003",
+                "title": "Seller presentation and coordination board",
+                "kind": "other"
+              },
+              {
+                "id": "document-004",
+                "title": "Specialist repair scope and fixed quote",
+                "kind": "quote"
+              }
+            ],
+            "messages": [
+              {
+                "id": "message-001",
+                "sender": "buyer",
+                "at": "2026-10-07T09:00:00-04:00"
+              },
+              {
+                "id": "message-002",
+                "sender": "seller",
+                "at": "2026-10-07T09:00:00-04:00"
+              }
+            ],
+            "amendments": [
+              "revision-001",
+              "revision-002"
+            ],
+            "envelopes": [
+              "envelope-001"
+            ]
+          },
+          "amendments": [
+            {
+              "id": "revision-001",
+              "version": 1,
+              "terms": {
+                "type": "credit",
+                "amount_cents": 600000
+              },
+              "evidence_ids": [
+                "document-002",
+                "document-004"
+              ],
+              "created_at": "2026-10-07T09:05:00-04:00",
+              "authority_id": "authority-001",
+              "required_signers": [
+                "buyer",
+                "seller"
+              ],
+              "status": "executed",
+              "executed_at": "2026-10-07T09:30:00-04:00",
+              "signers": [
+                {
+                  "party": "buyer",
+                  "signed": true,
+                  "signed_at": "2026-10-07T09:20:00-04:00"
+                },
+                {
+                  "party": "seller",
+                  "signed": true,
+                  "signed_at": "2026-10-07T09:30:00-04:00"
+                }
+              ]
+            },
+            {
+              "id": "revision-002",
+              "version": 2,
+              "terms": {
+                "type": "credit",
+                "amount_cents": 800000
+              },
+              "evidence_ids": [
+                "document-002",
+                "document-004"
+              ],
+              "created_at": "2026-10-07T10:05:00-04:00",
+              "authority_id": "authority-001",
+              "required_signers": [
+                "buyer",
+                "seller"
+              ],
+              "status": "draft",
+              "executed_at": null,
+              "signers": [
+                {
+                  "party": "buyer",
+                  "signed": false,
+                  "signed_at": null
+                },
+                {
+                  "party": "seller",
+                  "signed": false,
+                  "signed_at": null
+                }
+              ]
+            }
+          ],
+          "operative_revision_id": "revision-001",
+          "effective_credit_cents": 600000,
+          "eligible_cost_cents": 1200000,
+          "disposition": null,
+          "title": "63 Ash Avenue · inspection response",
+          "brief": "Act as buyer Ari Morgan's transaction coordinator for 63 Ash Avenue. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims. Opening handoff: both parties executed revision-001 for 600000 cents. The coordinator then drafted revised 800000-cent terms in revision-002; that new revision has no signatures yet. Inspect both revisions; signatures on revision-001 do not execute revision-002.",
+          "property": "63 Ash Avenue, Bellmere, New York (synthetic)",
+          "buyer": "Ari Morgan",
+          "seller": "Nina Park",
+          "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Opening transaction records were created by prior coordination before your handoff; their elapsed time and records remain valid, but those earlier actions do not consume your current attempt budget. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+          "required_signers": [
+            "buyer",
+            "seller"
+          ]
+        },
+        "tools": [
+          {
+            "name": "read",
+            "description": "Read public evidence or the resource index; consumes no simulated time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resource": {
+                  "type": "string",
+                  "description": "Public resource kind. Summary lists discoverable IDs.",
+                  "default": "summary",
+                  "enum": [
+                    "summary",
+                    "document",
+                    "message",
+                    "envelope",
+                    "amendment"
+                  ]
+                },
+                "resource_id": {
+                  "description": "ID of the resource, omitted for summary.",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "request",
+            "description": "Request specialist evidence, buyer authority, or a seller response.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "request": {
+                  "description": "Typed intent with its required evidence, authority permission, or proposed terms.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "specialist_evidence",
+                          "enum": [
+                            "specialist_evidence"
+                          ]
+                        },
+                        "document_id": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "document_id",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "buyer_authorization",
+                          "enum": [
+                            "buyer_authorization"
+                          ]
+                        },
+                        "permission": {
+                          "type": "string",
+                          "enum": [
+                            "credit",
+                            "extension",
+                            "proceed",
+                            "cancel"
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "permission",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "seller_negotiation",
+                          "enum": [
+                            "seller_negotiation"
+                          ]
+                        },
+                        "terms": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "credit",
+                                  "enum": [
+                                    "credit"
+                                  ]
+                                },
+                                "amount_cents": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "amount_cents",
+                                "type"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "extension",
+                                  "enum": [
+                                    "extension"
+                                  ]
+                                },
+                                "deadline": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "deadline",
+                                "type"
+                              ]
+                            }
+                          ]
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "default": [],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "terms",
+                        "intent"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "request"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "draft_amendment",
+            "description": "Create an immutable credit or extension revision. Drafting does not execute it.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "terms": {
+                  "description": "Immutable credit in integer cents or an explicit extension deadline.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "credit",
+                          "enum": [
+                            "credit"
+                          ]
+                        },
+                        "amount_cents": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "amount_cents",
+                        "type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "extension",
+                          "enum": [
+                            "extension"
+                          ]
+                        },
+                        "deadline": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "deadline",
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "description": "Public evidence IDs supporting these terms.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "terms",
+                "evidence_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "send_for_signature",
+            "description": "Route an exact revision for its stipulated signatures.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "revision_id": {
+                  "type": "string",
+                  "description": "Immutable amendment revision to route."
+                }
+              },
+              "required": [
+                "revision_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wait_until",
+            "description": "Advance simulated time and process intervening counterpart events.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "string",
+                  "description": "Timezone-aware ISO 8601 timestamp, e.g. 2026-10-05T12:00:00-04:00."
+                }
+              },
+              "required": [
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "set_disposition",
+            "description": "Attempt a buyer-authorized disposition subject to case constraints.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "disposition": {
+                  "type": "string",
+                  "description": "Proceed with the transaction or cancel it.",
+                  "enum": [
+                    "proceed",
+                    "cancel"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Evidence-based reason for this action."
+                }
+              },
+              "required": [
+                "disposition",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "finish",
+            "description": "End the attempt with structured factual claims. Has no business effects.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "claims": {
+                  "type": "object",
+                  "description": "Structured final disposition, effective credit, executed revision IDs, and optional deadline.",
+                  "properties": {
+                    "disposition": {
+                      "type": "string",
+                      "enum": [
+                        "proceed",
+                        "cancel",
+                        "unresolved"
+                      ]
+                    },
+                    "effective_credit_cents": {
+                      "type": "integer",
+                      "default": 0,
+                      "minimum": 0
+                    },
+                    "executed_revision_ids": {
+                      "type": "array",
+                      "default": [],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "deadline": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "disposition"
+                  ]
+                },
+                "report": {
+                  "type": "string",
+                  "description": "Concise final report grounded in public records."
+                }
+              },
+              "required": [
+                "claims",
+                "report"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
       "provenance": {
         "inspect_log": "2026-09-27T15-48-33-00-00_dealroom_BsbkDzgAnzZYJp5NZdNBXs.eval",
         "model": "mockllm/model",
@@ -19262,6 +21998,7 @@
             "total_cost": null
           }
         },
+        "duration_seconds": 0.031,
         "source": "Inspect public log API"
       }
     },
@@ -23357,6 +26094,446 @@
           }
         }
       ],
+      "task": {
+        "brief": "Act as buyer Sage Rivera's transaction coordinator for 25 Linden Way. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+        "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+        "system_prompt": "You are the buyer's transaction coordinator in a synthetic transaction.\nUse only the public case materials and the seven supplied tools. Read the public\npolicy and discoverable evidence. Actions and signatures have simulated timing;\nplan within the contractual deadline and buyer's current authority. Execute one\ntool at a time. Use finish to submit structured claims backed by public evidence.\nThis fictional benchmark does not provide real legal advice or real services.\n",
+        "initial_observation": {
+          "case_id": "case-05",
+          "now": "2026-10-07T09:00:00-04:00",
+          "deadline": "2026-10-07T10:00:00-04:00",
+          "business_status": "open",
+          "finished": false,
+          "attempts": 0,
+          "action_limit": 80,
+          "budget_exhausted": false,
+          "authority": {
+            "id": "authority-001",
+            "effective_at": "2026-10-07T09:00:00-04:00",
+            "valid_through": "2026-10-07T14:00:00-04:00",
+            "permissions": [
+              "credit",
+              "extension",
+              "proceed"
+            ],
+            "minimum_credit_cents": 800000,
+            "maximum_credit_cents": 2000000,
+            "maximum_residual_cents": 200000,
+            "extension_limit": "2026-10-07T14:00:00-04:00",
+            "source_id": "message-001"
+          },
+          "resources": {
+            "documents": [
+              {
+                "id": "document-001",
+                "title": "Purchase agreement — inspection contingency",
+                "kind": "contract"
+              },
+              {
+                "id": "document-002",
+                "title": "Inspection findings and specialist referral",
+                "kind": "inspection"
+              },
+              {
+                "id": "document-003",
+                "title": "Seller presentation and coordination board",
+                "kind": "other"
+              },
+              {
+                "id": "document-004",
+                "title": "Specialist repair scope and fixed quote",
+                "kind": "quote"
+              }
+            ],
+            "messages": [
+              {
+                "id": "message-001",
+                "sender": "buyer",
+                "at": "2026-10-07T09:00:00-04:00"
+              },
+              {
+                "id": "message-002",
+                "sender": "seller",
+                "at": "2026-10-07T09:00:00-04:00"
+              }
+            ],
+            "amendments": [],
+            "envelopes": []
+          },
+          "amendments": [],
+          "operative_revision_id": null,
+          "effective_credit_cents": 0,
+          "eligible_cost_cents": 1000000,
+          "disposition": null,
+          "title": "25 Linden Way · inspection response",
+          "brief": "Act as buyer Sage Rivera's transaction coordinator for 25 Linden Way. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+          "property": "25 Linden Way, Bellmere, New York (synthetic)",
+          "buyer": "Sage Rivera",
+          "seller": "Evan Cole",
+          "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+          "required_signers": [
+            "buyer",
+            "seller"
+          ]
+        },
+        "tools": [
+          {
+            "name": "read",
+            "description": "Read public evidence or the resource index; consumes no simulated time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resource": {
+                  "type": "string",
+                  "description": "Public resource kind. Summary lists discoverable IDs.",
+                  "default": "summary",
+                  "enum": [
+                    "summary",
+                    "document",
+                    "message",
+                    "envelope",
+                    "amendment"
+                  ]
+                },
+                "resource_id": {
+                  "description": "ID of the resource, omitted for summary.",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "request",
+            "description": "Request specialist evidence, buyer authority, or a seller response.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "request": {
+                  "description": "Typed intent with its required evidence, authority permission, or proposed terms.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "specialist_evidence",
+                          "enum": [
+                            "specialist_evidence"
+                          ]
+                        },
+                        "document_id": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "document_id",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "buyer_authorization",
+                          "enum": [
+                            "buyer_authorization"
+                          ]
+                        },
+                        "permission": {
+                          "type": "string",
+                          "enum": [
+                            "credit",
+                            "extension",
+                            "proceed",
+                            "cancel"
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "permission",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "seller_negotiation",
+                          "enum": [
+                            "seller_negotiation"
+                          ]
+                        },
+                        "terms": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "credit",
+                                  "enum": [
+                                    "credit"
+                                  ]
+                                },
+                                "amount_cents": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "amount_cents",
+                                "type"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "extension",
+                                  "enum": [
+                                    "extension"
+                                  ]
+                                },
+                                "deadline": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "deadline",
+                                "type"
+                              ]
+                            }
+                          ]
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "default": [],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "terms",
+                        "intent"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "request"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "draft_amendment",
+            "description": "Create an immutable credit or extension revision. Drafting does not execute it.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "terms": {
+                  "description": "Immutable credit in integer cents or an explicit extension deadline.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "credit",
+                          "enum": [
+                            "credit"
+                          ]
+                        },
+                        "amount_cents": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "amount_cents",
+                        "type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "extension",
+                          "enum": [
+                            "extension"
+                          ]
+                        },
+                        "deadline": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "deadline",
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "description": "Public evidence IDs supporting these terms.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "terms",
+                "evidence_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "send_for_signature",
+            "description": "Route an exact revision for its stipulated signatures.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "revision_id": {
+                  "type": "string",
+                  "description": "Immutable amendment revision to route."
+                }
+              },
+              "required": [
+                "revision_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wait_until",
+            "description": "Advance simulated time and process intervening counterpart events.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "string",
+                  "description": "Timezone-aware ISO 8601 timestamp, e.g. 2026-10-05T12:00:00-04:00."
+                }
+              },
+              "required": [
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "set_disposition",
+            "description": "Attempt a buyer-authorized disposition subject to case constraints.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "disposition": {
+                  "type": "string",
+                  "description": "Proceed with the transaction or cancel it.",
+                  "enum": [
+                    "proceed",
+                    "cancel"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Evidence-based reason for this action."
+                }
+              },
+              "required": [
+                "disposition",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "finish",
+            "description": "End the attempt with structured factual claims. Has no business effects.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "claims": {
+                  "type": "object",
+                  "description": "Structured final disposition, effective credit, executed revision IDs, and optional deadline.",
+                  "properties": {
+                    "disposition": {
+                      "type": "string",
+                      "enum": [
+                        "proceed",
+                        "cancel",
+                        "unresolved"
+                      ]
+                    },
+                    "effective_credit_cents": {
+                      "type": "integer",
+                      "default": 0,
+                      "minimum": 0
+                    },
+                    "executed_revision_ids": {
+                      "type": "array",
+                      "default": [],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "deadline": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "disposition"
+                  ]
+                },
+                "report": {
+                  "type": "string",
+                  "description": "Concise final report grounded in public records."
+                }
+              },
+              "required": [
+                "claims",
+                "report"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
       "provenance": {
         "inspect_log": "2026-09-27T15-48-34-00-00_dealroom_JubzgTJn8Heh9gdnDmKqjH.eval",
         "model": "mockllm/model",
@@ -23371,6 +26548,7 @@
             "total_cost": null
           }
         },
+        "duration_seconds": 0.046,
         "source": "Inspect public log API"
       }
     },
@@ -25650,6 +28828,445 @@
           }
         }
       ],
+      "task": {
+        "brief": "Act as buyer Remy Stone's transaction coordinator for 91 Birch Place. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+        "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+        "system_prompt": "You are the buyer's transaction coordinator in a synthetic transaction.\nUse only the public case materials and the seven supplied tools. Read the public\npolicy and discoverable evidence. Actions and signatures have simulated timing;\nplan within the contractual deadline and buyer's current authority. Execute one\ntool at a time. Use finish to submit structured claims backed by public evidence.\nThis fictional benchmark does not provide real legal advice or real services.\n",
+        "initial_observation": {
+          "case_id": "case-06",
+          "now": "2026-10-08T09:00:00-04:00",
+          "deadline": "2026-10-08T17:00:00-04:00",
+          "business_status": "open",
+          "finished": false,
+          "attempts": 0,
+          "action_limit": 80,
+          "budget_exhausted": false,
+          "authority": {
+            "id": "authority-001",
+            "effective_at": "2026-10-08T09:00:00-04:00",
+            "valid_through": "2026-10-08T17:00:00-04:00",
+            "permissions": [
+              "credit",
+              "proceed"
+            ],
+            "minimum_credit_cents": 0,
+            "maximum_credit_cents": 2000000,
+            "maximum_residual_cents": 300000,
+            "extension_limit": null,
+            "source_id": "message-001"
+          },
+          "resources": {
+            "documents": [
+              {
+                "id": "document-001",
+                "title": "Purchase agreement — inspection contingency",
+                "kind": "contract"
+              },
+              {
+                "id": "document-002",
+                "title": "Inspection findings and specialist referral",
+                "kind": "inspection"
+              },
+              {
+                "id": "document-003",
+                "title": "Seller presentation and coordination board",
+                "kind": "other"
+              },
+              {
+                "id": "document-004",
+                "title": "Specialist repair scope and fixed quote",
+                "kind": "quote"
+              }
+            ],
+            "messages": [
+              {
+                "id": "message-001",
+                "sender": "buyer",
+                "at": "2026-10-08T09:00:00-04:00"
+              },
+              {
+                "id": "message-002",
+                "sender": "seller",
+                "at": "2026-10-08T09:00:00-04:00"
+              }
+            ],
+            "amendments": [],
+            "envelopes": []
+          },
+          "amendments": [],
+          "operative_revision_id": null,
+          "effective_credit_cents": 0,
+          "eligible_cost_cents": 1500000,
+          "disposition": null,
+          "title": "91 Birch Place · inspection response",
+          "brief": "Act as buyer Remy Stone's transaction coordinator for 91 Birch Place. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+          "property": "91 Birch Place, Bellmere, New York (synthetic)",
+          "buyer": "Remy Stone",
+          "seller": "Ada Quinn",
+          "policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+          "required_signers": [
+            "buyer",
+            "seller"
+          ]
+        },
+        "tools": [
+          {
+            "name": "read",
+            "description": "Read public evidence or the resource index; consumes no simulated time.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "resource": {
+                  "type": "string",
+                  "description": "Public resource kind. Summary lists discoverable IDs.",
+                  "default": "summary",
+                  "enum": [
+                    "summary",
+                    "document",
+                    "message",
+                    "envelope",
+                    "amendment"
+                  ]
+                },
+                "resource_id": {
+                  "description": "ID of the resource, omitted for summary.",
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "request",
+            "description": "Request specialist evidence, buyer authority, or a seller response.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "request": {
+                  "description": "Typed intent with its required evidence, authority permission, or proposed terms.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "specialist_evidence",
+                          "enum": [
+                            "specialist_evidence"
+                          ]
+                        },
+                        "document_id": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "document_id",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "buyer_authorization",
+                          "enum": [
+                            "buyer_authorization"
+                          ]
+                        },
+                        "permission": {
+                          "type": "string",
+                          "enum": [
+                            "credit",
+                            "extension",
+                            "proceed",
+                            "cancel"
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "permission",
+                        "intent"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "default": "seller_negotiation",
+                          "enum": [
+                            "seller_negotiation"
+                          ]
+                        },
+                        "terms": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "credit",
+                                  "enum": [
+                                    "credit"
+                                  ]
+                                },
+                                "amount_cents": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "amount_cents",
+                                "type"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "extension",
+                                  "enum": [
+                                    "extension"
+                                  ]
+                                },
+                                "deadline": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "deadline",
+                                "type"
+                              ]
+                            }
+                          ]
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "default": [],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "terms",
+                        "intent"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "request"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "draft_amendment",
+            "description": "Create an immutable credit or extension revision. Drafting does not execute it.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "terms": {
+                  "description": "Immutable credit in integer cents or an explicit extension deadline.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "credit",
+                          "enum": [
+                            "credit"
+                          ]
+                        },
+                        "amount_cents": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "amount_cents",
+                        "type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "default": "extension",
+                          "enum": [
+                            "extension"
+                          ]
+                        },
+                        "deadline": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "deadline",
+                        "type"
+                      ]
+                    }
+                  ]
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "description": "Public evidence IDs supporting these terms.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "terms",
+                "evidence_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "send_for_signature",
+            "description": "Route an exact revision for its stipulated signatures.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "revision_id": {
+                  "type": "string",
+                  "description": "Immutable amendment revision to route."
+                }
+              },
+              "required": [
+                "revision_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wait_until",
+            "description": "Advance simulated time and process intervening counterpart events.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "string",
+                  "description": "Timezone-aware ISO 8601 timestamp, e.g. 2026-10-05T12:00:00-04:00."
+                }
+              },
+              "required": [
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "set_disposition",
+            "description": "Attempt a buyer-authorized disposition subject to case constraints.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "disposition": {
+                  "type": "string",
+                  "description": "Proceed with the transaction or cancel it.",
+                  "enum": [
+                    "proceed",
+                    "cancel"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Evidence-based reason for this action."
+                }
+              },
+              "required": [
+                "disposition",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "finish",
+            "description": "End the attempt with structured factual claims. Has no business effects.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "claims": {
+                  "type": "object",
+                  "description": "Structured final disposition, effective credit, executed revision IDs, and optional deadline.",
+                  "properties": {
+                    "disposition": {
+                      "type": "string",
+                      "enum": [
+                        "proceed",
+                        "cancel",
+                        "unresolved"
+                      ]
+                    },
+                    "effective_credit_cents": {
+                      "type": "integer",
+                      "default": 0,
+                      "minimum": 0
+                    },
+                    "executed_revision_ids": {
+                      "type": "array",
+                      "default": [],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "deadline": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "disposition"
+                  ]
+                },
+                "report": {
+                  "type": "string",
+                  "description": "Concise final report grounded in public records."
+                }
+              },
+              "required": [
+                "claims",
+                "report"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      },
       "provenance": {
         "inspect_log": "2026-09-27T15-48-34-00-00_dealroom_kWb4uweojXuohmHdxLebN2.eval",
         "model": "mockllm/model",
@@ -25664,6 +29281,7 @@
             "total_cost": null
           }
         },
+        "duration_seconds": 0.035,
         "source": "Inspect public log API"
       }
     }

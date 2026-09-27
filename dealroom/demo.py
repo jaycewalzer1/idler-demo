@@ -298,6 +298,28 @@ def export_logs(paths: list[Path], output: Path) -> dict:
             counts["successes" if outcome["success"] else "failures"] += 1
             run_id = meta.get("run_id", f"{log.eval.eval_id}-{sample.id}-{sample.epoch}")
             is_mock = log.eval.model.startswith("mockllm/")
+            initial_observation = json.loads(sample.input) if isinstance(sample.input, str) else {}
+            if not isinstance(initial_observation, dict):
+                initial_observation = {}
+            first_request = next((event for event in sample.events if event.event == "model"), None)
+            # Task inspection uses the public prompt and tool schemas recorded by
+            # Inspect, not a new frontend description of the environment contract.
+            task_details = {
+                "brief": initial_observation.get("brief", case.brief),
+                "policy": initial_observation.get("policy", case.public_policy),
+                "system_prompt": "\n\n".join(
+                    message.text for message in sample.messages if message.role == "system"
+                ),
+                "initial_observation": initial_observation,
+                "tools": [
+                    {
+                        "name": tool.name,
+                        "description": tool.description,
+                        "parameters": tool.parameters.model_dump(mode="json", exclude_none=True),
+                    }
+                    for tool in (first_request.tools if first_request else [])
+                ],
+            }
             runs.append(
                 {
                     "id": run_id,
@@ -323,10 +345,12 @@ def export_logs(paths: list[Path], output: Path) -> dict:
                     **({"paired_run_id": meta["paired_run_id"]} if "paired_run_id" in meta else {}),
                     "score": {"success": outcome["success"], "diagnostics": diagnostics(outcome)},
                     "steps": steps,
+                    "task": task_details,
                     "provenance": {
                         "inspect_log": path.name,
                         "model": log.eval.model,
                         "usage": dump(sample.model_usage),
+                        "duration_seconds": sample.total_time,
                         "source": "Inspect public log API",
                     },
                 }
