@@ -1,5 +1,18 @@
 # Local learning experiment
 
+The memory-repaired run uses `--directory training/experiment-v2 --id
+dealroom-llama-learning-v2` with both experiment commands. The original v1
+preflight failure remains archived. Training computes causal attention and its
+gradients in 256-query blocks, preserving all context and targets while bounding
+attention-gradient memory. Gradients are materialized one block at a
+time, layer gradients are recomputed and evaluated one layer at a time without a
+full-model gradient trace, and the frozen backbone prefix is computed outside
+automatic differentiation. Host-backed attention inputs keep MLX from retaining
+dense attention intermediates during its custom-gradient forward pass. Frozen
+feed-forward layers also use 256-token blocks for input-gradient recomputation.
+Tests compare both attention gradients and complete adapter gradients against the
+original calculation. Inference is unchanged.
+
 This experiment compares four conditions of the same Llama 3.1 8B Instruct MLX
 4-bit checkpoint: original workflow, clarified workflow, clarified workflow with
 supervised LoRA training, and the supervised checkpoint with environment-reward
@@ -24,8 +37,8 @@ training/.venv/bin/hf download mlx-community/Meta-Llama-3.1-8B-Instruct-4bit \
   --local-dir training/models/llama3.1-8b-4bit
 training/.venv/bin/python -m dealroom.learning_data
 training/.venv/bin/python -m dealroom.learning_train prepare --output training/tokenized
-training/.venv/bin/python -m dealroom.learning_experiment --prepare
-training/.venv/bin/python -u -m dealroom.learning_experiment --run
+training/.venv/bin/python -m dealroom.learning_experiment --prepare --directory training/experiment-v2 --id dealroom-llama-learning-v2
+training/.venv/bin/python -u -m dealroom.learning_experiment --run --directory training/experiment-v2 --id dealroom-llama-learning-v2
 ```
 
 The base model is downloaded locally under `training/models/llama3.1-8b-4bit`.
@@ -52,8 +65,8 @@ conditioning context. Rows over the declared length are excluded explicitly,
 never silently truncated. All current rows fit.
 
 The local pilot uses 128 optimizer steps, batch size one, Adam at 2e-5, rank-8
-LoRA on query/value projections in the final eight layers, and gradient
-checkpointing. Only adapter parameters can change. Completion-position logits
+LoRA on query/value projections in the final eight layers, and layer-by-layer
+gradient recomputation. Only adapter parameters can change. Completion-position logits
 avoid projecting the entire long prompt into the large vocabulary. The checkpoint
 is the fixed final step; validation loss is diagnostic. This is a short pilot,
 not a full epoch over every decision. The saved metadata records actual examples,
