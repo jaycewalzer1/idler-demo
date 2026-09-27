@@ -1,0 +1,67 @@
+{
+  "case_id": "learn-36738f3939caf94d",
+  "split": "validation",
+  "use": "fixture_validation_only",
+  "witness": [
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-001"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-002"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-003"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-004"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-005"
+    },
+    {
+      "type": "read",
+      "resource": "message",
+      "resource_id": "message-001"
+    },
+    {
+      "type": "read",
+      "resource": "message",
+      "resource_id": "message-002"
+    },
+    {
+      "type": "send_for_signature",
+      "revision_id": "revision-001"
+    },
+    {
+      "type": "wait_until",
+      "at": "2027-09-06T10:22:00-05:00"
+    },
+    {
+      "type": "set_disposition",
+      "disposition": "proceed",
+      "reason": "Public cost evidence, current authority, and execution records support this disposition."
+    },
+    {
+      "type": "finish",
+      "claims": {
+        "disposition": "proceed",
+        "effective_credit_cents": 2340300,
+        "executed_revision_ids": [
+          "revision-001"
+        ],
+        "deadline": "2027-09-06T14:50:00-05:00"
+      },
+      "report": "Recorded the authorized disposition and verified the effective terms against transaction records."
+    }
+  ]
+}

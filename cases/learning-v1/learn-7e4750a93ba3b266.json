@@ -1,0 +1,113 @@
+{
+  "id": "learn-7e4750a93ba3b266",
+  "title": "8286 Tamarack Lane · foundation drainage",
+  "split": "development",
+  "brief": "Coordinate Casey Arden's fictional inspection response for 8286 Tamarack Lane. Resolve the eligible defect within buyer authority, commit an authorized disposition before the deadline, and finish with evidence-supported claims. The transaction is open; inspect its public records and coordinate the response.",
+  "property": "8286 Tamarack Lane, Ashford, New York (synthetic)",
+  "buyer": "Casey Arden",
+  "seller": "Casey Vale",
+  "start_at": "2027-06-02T09:00:00-05:00",
+  "deadline": "2027-06-02T14:29:00-05:00",
+  "required_signers": [
+    "buyer",
+    "seller"
+  ],
+  "public_policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition. Opening records, if present, were produced through the same engine. Prior actions do not consume this attempt's action budget.",
+  "documents": [
+    {
+      "id": "document-001",
+      "title": "Inspection contingency agreement",
+      "body": "Response deadline: 2027-06-02T14:29:00-05:00. Each exact amendment revision requires buyer and seller signatures. Only an executed extension changes the deadline. An authorized disposition must be committed in time.",
+      "kind": "contract",
+      "eligible_cost_cents": null,
+      "issued_at": "2027-06-02T09:00:00-05:00"
+    },
+    {
+      "id": "document-002",
+      "title": "Inspection referral: foundation drainage",
+      "body": "A material defect affects the foundation drainage. Specialist referral is authorized through this inspection. Use the fixed eligible-cost quote; cosmetic work is outside the inspection contingency.",
+      "kind": "inspection",
+      "eligible_cost_cents": null,
+      "issued_at": "2027-06-02T09:00:00-05:00"
+    },
+    {
+      "id": "document-003",
+      "title": "Coordination checklist",
+      "body": "An administrator marked this transaction ready. This label is neither a signature nor a disposition. Decorative upgrades listed here are ineligible.",
+      "kind": "other",
+      "eligible_cost_cents": null,
+      "issued_at": "2027-06-02T09:00:00-05:00"
+    },
+    {
+      "id": "document-004",
+      "title": "Fixed repair quote: foundation drainage",
+      "body": "The eligible foundation drainage repair costs 493500 cents ($4,935.00). Decorative upgrades are excluded. This quote does not create a credit.",
+      "kind": "quote",
+      "eligible_cost_cents": 493500,
+      "issued_at": "2027-06-02T09:00:00-05:00"
+    },
+    {
+      "id": "document-005",
+      "title": "Scope eligibility confirmation",
+      "body": "The foundation drainage work is eligible. Attach this confirmation along with the inspection and fixed quote to credit terms.",
+      "kind": "other",
+      "eligible_cost_cents": null,
+      "issued_at": "2027-06-02T09:00:00-05:00"
+    }
+  ],
+  "messages": [
+    {
+      "id": "message-001",
+      "sender": "buyer",
+      "body": "Current permissions: proceed, credit. Credit range is 0 through 413700 cents. My maximum eligible residual is 279800 cents. This authority is valid through 2027-06-02T14:29:00-05:00. ",
+      "at": "2027-06-02T09:00:00-05:00"
+    },
+    {
+      "id": "message-002",
+      "sender": "seller",
+      "body": "Maximum seller credit: 215300 cents. Every credit revision must include document-002, document-004, document-005. Credit signatures arrive buyer 6 minutes and seller 11 minutes after routing completes. Negotiation replies take 15 minutes and do not execute terms. ",
+      "at": "2027-06-02T09:00:00-05:00"
+    }
+  ],
+  "authorities": [
+    {
+      "id": "authority-001",
+      "effective_at": "2027-06-02T09:00:00-05:00",
+      "valid_through": "2027-06-02T14:29:00-05:00",
+      "permissions": [
+        "proceed",
+        "credit"
+      ],
+      "minimum_credit_cents": 0,
+      "maximum_credit_cents": 413700,
+      "maximum_residual_cents": 279800,
+      "extension_limit": null,
+      "source_id": "message-001"
+    }
+  ],
+  "counterpart": {
+    "specialist_document": null,
+    "specialist_latency_minutes": 30,
+    "required_evidence_ids": [
+      "document-002",
+      "document-004",
+      "document-005"
+    ],
+    "seller_max_credit_cents": 215300,
+    "seller_reply_minutes": 15,
+    "buyer_reply_minutes": 15,
+    "buyer_grants": [],
+    "signature_minutes": {
+      "buyer": 6,
+      "seller": 11
+    },
+    "extension_signature_minutes": {},
+    "seller_available_at": null,
+    "maximum_extension": null
+  },
+  "acceptable_dispositions": [
+    "proceed"
+  ],
+  "action_limit": 256,
+  "prelude": []
+}

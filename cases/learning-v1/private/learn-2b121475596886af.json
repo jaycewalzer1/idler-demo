@@ -1,0 +1,73 @@
+{
+  "case_id": "learn-2b121475596886af",
+  "split": "validation",
+  "use": "fixture_validation_only",
+  "witness": [
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-001"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-002"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-003"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-004"
+    },
+    {
+      "type": "read",
+      "resource": "message",
+      "resource_id": "message-001"
+    },
+    {
+      "type": "read",
+      "resource": "message",
+      "resource_id": "message-002"
+    },
+    {
+      "type": "draft_amendment",
+      "terms": {
+        "type": "credit",
+        "amount_cents": 1505400
+      },
+      "evidence_ids": [
+        "document-002",
+        "document-004"
+      ]
+    },
+    {
+      "type": "send_for_signature",
+      "revision_id": "revision-001"
+    },
+    {
+      "type": "wait_until",
+      "at": "2027-04-09T09:38:00-05:00"
+    },
+    {
+      "type": "set_disposition",
+      "disposition": "proceed",
+      "reason": "Public cost evidence, current authority, and execution records support this disposition."
+    },
+    {
+      "type": "finish",
+      "claims": {
+        "disposition": "proceed",
+        "effective_credit_cents": 1505400,
+        "executed_revision_ids": [
+          "revision-001"
+        ],
+        "deadline": "2027-04-09T09:43:00-05:00"
+      },
+      "report": "Recorded the authorized disposition and verified the effective terms against transaction records."
+    }
+  ]
+}

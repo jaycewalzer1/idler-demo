@@ -11,3 +11,9 @@ models/
 benchmark-state/
 .env
 .DS_Store
+training/data/
+training/tokenized/
+training/checkpoints/
+training/rollouts/
+training/runtime/
+training/experiment-*/

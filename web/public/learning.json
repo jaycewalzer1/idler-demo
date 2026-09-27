@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "id": "dealroom-llama-learning-v1",
+  "title": "Llama learning in DealRoom",
+  "status": "preparing",
+  "updated_at": "2026-09-27T19:55:00.148758+00:00",
+  "model": {
+    "id": "mlx-community/Meta-Llama-3.1-8B-Instruct-4bit",
+    "label": "Llama 3.1 8B Instruct",
+    "base_revision": "241a666dad6cb93c8ff213d39a7f34a36bf26db4",
+    "quantization": "MLX 4-bit LoRA"
+  },
+  "dataset": {
+    "version": "dealroom-learning-v1",
+    "train_count": 256,
+    "validation_count": 32,
+    "test_count": 64,
+    "fingerprint": "bfe61f82c3ebae847de30303add4e8285f38a253eb3a2afd94c896a6786e80af",
+    "test_status": "sealed"
+  },
+  "stages": [
+    {
+      "id": "original",
+      "label": "Original model",
+      "status": "pending",
+      "evaluations": []
+    },
+    {
+      "id": "workflow",
+      "label": "Clearer workflow",
+      "status": "pending",
+      "evaluations": []
+    },
+    {
+      "id": "sft",
+      "label": "Supervised fine-tuning",
+      "status": "pending",
+      "evaluations": []
+    },
+    {
+      "id": "rl",
+      "label": "Reinforcement learning",
+      "status": "pending",
+      "evaluations": [],
+      "notes": [
+        "Recorded 0 completed rollout groups and 0 optimizer updates.",
+        "Training uses bounded semantic progress shaping; reported evaluation scores remain binary."
+      ]
+    }
+  ],
+  "curves": [],
+  "events": [
+    {
+      "at": "2026-09-27T19:49:29.838274+00:00",
+      "message": "Protocol frozen. Waiting for the original two-model benchmark before using the GPU."
+    },
+    {
+      "at": "2026-09-27T19:53:02.154008+00:00",
+      "message": "Protocol amended before any evaluation or training; prior protocol hash archived. Serving and training use the same frozen chat template."
+    }
+  ],
+  "attempts": [],
+  "limitations": [
+    "This is a small local adapter-training pilot on synthetic transactions; improvement is measured, not guaranteed.",
+    "The MLX base uses a different 4-bit representation from the earlier Ollama benchmark; all four learning conditions share the identical MLX base.",
+    "Compute limits, errors, and incomplete attempts are unscored. Compare success rates together with scored coverage.",
+    "RL training adds a bounded semantic potential difference to binary terminal reward. It does not claim reward invariance; held-out success uses the unchanged binary verifier.",
+    "Fixed final checkpoints are selected without sealed-test feedback. Validation loss is diagnostic; equal-reward rollout groups produce no optimizer update."
+  ],
+  "config": {
+    "protocol_sha256": "bdbe8a44798243a0b47671af0b64f97b1cee15c7ab8c4bc95ed82c9f20fc3a23",
+    "evaluation": {
+      "temperature": 0,
+      "max_turns": 128,
+      "max_messages": 512,
+      "max_tokens": 2000000,
+      "output_tokens_per_turn": 2048,
+      "time_limit_seconds": 1800,
+      "domain_action_limit": 256,
+      "compaction_threshold": 20000,
+      "compaction_preserve": 0.5,
+      "max_training_sequence_length": 24576,
+      "end_on_expiry": true,
+      "seed": 20260928,
+      "tool_calling": "inspect_text_emulation",
+      "score_policy": "canonical_unscored_limits"
+    },
+    "sft": {
+      "steps": 128,
+      "learning_rate": 2e-05,
+      "seed": 20260928,
+      "selection": "fixed final checkpoint",
+      "lora_rank": 8,
+      "last_layers": 8,
+      "lora_keys": [
+        "self_attn.q_proj",
+        "self_attn.v_proj"
+      ]
+    },
+    "rl": {
+      "algorithm": "population-standardized group-relative REINFORCE",
+      "primary_groups": 8,
+      "conditional_additional_groups": 8,
+      "rollouts_per_group": 4,
+      "additional_trigger": "After eight primary groups, run all eight additional groups only if fewer than two optimizer updates occurred.",
+      "groups": [
+        {
+          "index": 0,
+          "case_id": "learn-d90381655f136069",
+          "stage": "commit_ready",
+          "family": "credit_execution",
+          "conditional": false
+        },
+        {
+          "index": 1,
+          "case_id": "learn-2260819ab3314139",
+          "stage": "commit_ready",
+          "family": "credit_execution",
+          "conditional": false
+        },
+        {
+          "index": 2,
+          "case_id": "learn-27f3dee865a9533a",
+          "stage": "route_ready",
+          "family": "credit_execution",
+          "conditional": false
+        },
+        {
+          "index": 3,
+          "case_id": "learn-b9c5fccbb52376df",
+          "stage": "route_ready",
+          "family": "credit_execution",
+          "conditional": false
+        },
+        {
+          "index": 4,
+          "case_id": "learn-4a821c290fcf02e6",
+          "stage": "coordination",
+          "family": "credit_execution",
+          "conditional": false
+        },
+        {
+          "index": 5,
+          "case_id": "learn-2fdf010593ab2e4c",
+          "stage": "coordination",
+          "family": "quote_credit",
+          "conditional": false
+        },
+        {
+          "index": 6,
+          "case_id": "learn-843dfc806ec50758",
+          "stage": "coordination",
+          "family": "authority_credit",
+          "conditional": false
+        },
+        {
+          "index": 7,
+          "case_id": "learn-6965e97ccdfbd2d8",
+          "stage": "coordination",
+          "family": "extension_credit",
+          "conditional": false
+        },
+        {
+          "index": 8,
+          "case_id": "learn-44e85f528612390e",
+          "stage": "coordination",
+          "family": "credit_execution",
+          "conditional": true
+        },
+        {
+          "index": 9,
+          "case_id": "learn-bced8fbe42372fba",
+          "stage": "coordination",
+          "family": "quote_credit",
+          "conditional": true
+        },
+        {
+          "index": 10,
+          "case_id": "learn-78ed6f1e460893c7",
+          "stage": "coordination",
+          "family": "authority_credit",
+          "conditional": true
+        },
+        {
+          "index": 11,
+          "case_id": "learn-89b1e97b54ccf341",
+          "stage": "coordination",
+          "family": "extension_credit",
+          "conditional": true
+        },
+        {
+          "index": 12,
+          "case_id": "learn-2479e34d13833da9",
+          "stage": "coordination",
+          "family": "retry_credit",
+          "conditional": true
+        },
+        {
+          "index": 13,
+          "case_id": "learn-899128f8177e41eb",
+          "stage": "coordination",
+          "family": "revised_credit",
+          "conditional": true
+        },
+        {
+          "index": 14,
+          "case_id": "learn-30cac5d31152908f",
+          "stage": "coordination",
+          "family": "cancellation",
+          "conditional": true
+        },
+        {
+          "index": 15,
+          "case_id": "learn-3ab9dcf7b3245062",
+          "stage": "coordination",
+          "family": "boundary_credit",
+          "conditional": true
+        }
+      ],
+      "learning_rate": 1e-06,
+      "temperature": 1,
+      "top_p": 1,
+      "top_k": 0,
+      "min_p": 0,
+      "sampling_penalties": "none",
+      "updates_per_nonconstant_group": 1,
+      "reuse_rollouts": false,
+      "selection": "last completed update after predeclared groups",
+      "reward": "binary_terminal_plus_semantic_potential_delta_v1",
+      "shaping": true,
+      "max_potential": 0.2,
+      "shaping_scope": "train only; semantic records, not activity counts; no policy-invariance claim",
+      "equal_reward_groups": "skip; no fabricated optimizer step",
+      "unscored_outcomes": "excluded from rewards, advantages, and scoring denominators"
+    },
+    "preflight": {
+      "steps": 2,
+      "selection": "Shortest and longest tokenized TRAIN rows; disposable infrastructure checkpoint, never selected for evaluation.",
+      "learning_rate": 2e-05,
+      "validation": false
+    },
+    "current": null,
+    "chat_template_args": {
+      "date_string": "27 Sep 2026"
+    },
+    "training_runs": [],
+    "baseline_precondition": {
+      "id": "dealroom-local-48-text-tools-v4",
+      "report": "/Users/jaycewalzer/Desktop/DealRoom/web/public/benchmark.json",
+      "planned": 96
+    },
+    "selection": "Open once after all validation evaluations and final checkpoint hashes are frozen; never train or select checkpoints using test results."
+  }
+}

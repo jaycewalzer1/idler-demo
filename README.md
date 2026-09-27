@@ -18,6 +18,16 @@ The six logs and two reports live under `logs/diagnostics/`; they are excluded f
 
 The batch was temporarily interrupted for these diagnostics. Qwen `synth-044` is retained as an **incomplete, unscored operator interruption**, with its original log and measured serving context; it is not retried or counted as model failure. Canonical cancelled logs are now distinguished from genuine execution errors. The matched run resumes with its original frozen conditions.
 
+## Local training experiment
+
+The separate learning pipeline compares the original workflow, a clarified
+workflow, a supervised LoRA checkpoint, and an environment-reward-trained
+checkpoint on the same MLX Llama 3.1 8B base. It uses 256 training scenarios,
+32 validation scenarios, and 64 sealed composition holdouts. The existing Ollama
+comparison continues independently. See [training/README.md](training/README.md)
+for the protocol and reproduction commands. The **Training experiment** console
+tab reads live `learning.json`; pending stages have no invented scores.
+
 ## Open the console
 
 From the project directory:

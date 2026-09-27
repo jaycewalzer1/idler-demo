@@ -1,0 +1,6 @@
+{
+  "repo_id": "mlx-community/Meta-Llama-3.1-8B-Instruct-4bit",
+  "revision": "241a666dad6cb93c8ff213d39a7f34a36bf26db4",
+  "path": "/Users/jaycewalzer/Desktop/DealRoom/training/models/llama3.1-8b-4bit",
+  "note": "Same Llama3.1 8B Instruct family; MLX4bit quantization differs from OllamaQ4_K_M. All learning comparisons use this exact MLX base."
+}

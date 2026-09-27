@@ -132,6 +132,143 @@ export interface BenchmarkExport {
 
 export const attemptStatuses: AttemptStatus[] = ['success', 'failure', 'error', 'limit', 'incomplete', 'running', 'pending'];
 
+export type LearningStageId = 'original' | 'workflow' | 'sft' | 'rl';
+export type LearningSplit = 'validation' | 'sealed_test';
+export interface LearningEvaluation {
+  split: LearningSplit;
+  planned: number;
+  success: number;
+  failure: number;
+  limit: number;
+  error: number;
+  incomplete: number;
+  tokens?: number;
+  seconds?: number;
+  dataset_version?: string;
+}
+export interface LearningCheckpoint {
+  id: string;
+  path?: string;
+  parent?: string;
+  digest?: string;
+  step?: number;
+  created_at?: string;
+}
+export interface LearningStage {
+  id: LearningStageId;
+  label: string;
+  status: 'pending' | 'running' | 'complete' | 'blocked' | 'skipped';
+  checkpoint?: string | LearningCheckpoint;
+  evaluation?: LearningEvaluation;
+  evaluations?: LearningEvaluation[];
+  notes?: string | string[];
+}
+export interface LearningAttempt {
+  id?: string;
+  stage: LearningStageId;
+  split: 'train' | LearningSplit;
+  case_id: string;
+  status: AttemptStatus;
+  reward?: number | null;
+  inspect_log?: string;
+  tokens?: number | null;
+  seconds?: number | null;
+  reason?: string;
+}
+export interface LearningExport {
+  schema_version: 1;
+  id: string;
+  title: string;
+  status: 'preparing' | 'baseline' | 'sft' | 'rl' | 'evaluating' | 'complete' | 'blocked';
+  updated_at: string;
+  model: { id: string; label: string; base_revision: string; quantization: string };
+  dataset: { version: string; train_count: number; validation_count: number; test_count: number; fingerprint: string; test_status: 'sealed' | 'opened' };
+  stages: LearningStage[];
+  curves: { stage: LearningStageId; step: number; metric: string; value: number; split?: 'train' | LearningSplit }[];
+  events: { at: string; message: string }[];
+  attempts?: LearningAttempt[];
+  limitations: string[];
+  config: Record<string, unknown>;
+}
+
+export function stageEvaluations(stage: LearningStage): LearningEvaluation[] {
+  return stage.evaluations ?? (stage.evaluation ? [stage.evaluation] : []);
+}
+
+export function parseLearning(value: unknown): LearningExport {
+  const count = (item: unknown) => number(item) && Number.isSafeInteger(item) && item >= 0;
+  const positiveText = (item: unknown) => text(item) && item.trim().length > 0;
+  const stageIds = ['original', 'workflow', 'sft', 'rl'];
+  const validEvaluation = (item: unknown): item is LearningEvaluation => object(item)
+    && ['validation', 'sealed_test'].includes(String(item.split))
+    && ['planned', 'success', 'failure', 'limit', 'error', 'incomplete'].every(key => count(item[key]))
+    && Number(item.success) + Number(item.failure) + Number(item.limit) + Number(item.error) + Number(item.incomplete) <= Number(item.planned)
+    && (item.tokens === undefined || count(item.tokens))
+    && (item.seconds === undefined || (number(item.seconds) && item.seconds >= 0))
+    && (item.dataset_version === undefined || positiveText(item.dataset_version));
+  if (!object(value) || value.schema_version !== 1 || !positiveText(value.id) || !positiveText(value.title)
+    || !['preparing', 'baseline', 'sft', 'rl', 'evaluating', 'complete', 'blocked'].includes(String(value.status)) || !timestamp(value.updated_at)
+    || !object(value.model) || !['id', 'label', 'base_revision', 'quantization'].every(key => positiveText((value.model as Record<string, unknown>)[key]))
+    || !object(value.dataset) || !positiveText(value.dataset.version) || !positiveText(value.dataset.fingerprint)
+    || !['train_count', 'validation_count', 'test_count'].every(key => count((value.dataset as Record<string, unknown>)[key]))
+    || !['sealed', 'opened'].includes(String(value.dataset.test_status)) || !Array.isArray(value.stages)
+    || !Array.isArray(value.curves) || !Array.isArray(value.events) || !stringArray(value.limitations) || !object(value.config)) {
+    throw new Error('The training export has invalid metadata. Expected a schema_version 1 learning.json report.');
+  }
+  const seen = new Set<string>();
+  for (const stage of value.stages) {
+    if (!object(stage) || !stageIds.includes(String(stage.id)) || seen.has(String(stage.id)) || !positiveText(stage.label)
+      || !['pending', 'running', 'complete', 'blocked', 'skipped'].includes(String(stage.status))
+      || (stage.notes !== undefined && !text(stage.notes) && !stringArray(stage.notes))
+      || (stage.evaluation !== undefined && !validEvaluation(stage.evaluation))
+      || (stage.evaluations !== undefined && (!Array.isArray(stage.evaluations) || !stage.evaluations.every(validEvaluation)))
+      || (stage.evaluation !== undefined && stage.evaluations !== undefined)) {
+      throw new Error('The training export has an invalid or duplicate stage, or inconsistent evaluation counts.');
+    }
+    seen.add(String(stage.id));
+    const evaluations = stageEvaluations(stage as unknown as LearningStage);
+    if (new Set(evaluations.map(item => item.split)).size !== evaluations.length) throw new Error('Each training stage may have only one evaluation per split.');
+    if (value.dataset.test_status === 'sealed' && evaluations.some(item => item.split === 'sealed_test')) {
+      throw new Error('A sealed test set cannot contain published evaluation results.');
+    }
+    const checkpoint = stage.checkpoint;
+    if (checkpoint !== undefined && !(positiveText(checkpoint) || (object(checkpoint) && positiveText(checkpoint.id)
+      && ['path', 'parent', 'digest'].every(key => checkpoint[key] === undefined || positiveText(checkpoint[key]))
+      && (checkpoint.step === undefined || count(checkpoint.step)) && (checkpoint.created_at === undefined || timestamp(checkpoint.created_at))))) {
+      throw new Error('The training export has an invalid checkpoint.');
+    }
+  }
+  if (!value.curves.every(point => object(point) && stageIds.includes(String(point.stage)) && count(point.step) && positiveText(point.metric) && number(point.value)
+    && (point.split === undefined || ['train', 'validation', 'sealed_test'].includes(String(point.split))))
+    || !value.events.every(event => object(event) && timestamp(event.at) && positiveText(event.message))) {
+    throw new Error('The training export has an invalid curve point or event.');
+  }
+  if (value.dataset.test_status === 'sealed' && value.curves.some(point => point.split === 'sealed_test')) throw new Error('Sealed test metrics cannot be published before the test set is opened.');
+  if (value.attempts !== undefined) {
+    if (!Array.isArray(value.attempts)) throw new Error('Training attempts must be an array.');
+    const attemptIds = new Set<string>();
+    for (const attempt of value.attempts) {
+      if (!object(attempt) || !stageIds.includes(String(attempt.stage)) || !['train', 'validation', 'sealed_test'].includes(String(attempt.split))
+        || !positiveText(attempt.case_id) || !attemptStatuses.includes(attempt.status as AttemptStatus)
+        || (attempt.id !== undefined && (!positiveText(attempt.id) || attemptIds.has(String(attempt.id))))
+        || (attempt.inspect_log !== undefined && !positiveText(attempt.inspect_log))
+        || (attempt.reason !== undefined && !text(attempt.reason))
+        || (attempt.tokens !== undefined && attempt.tokens !== null && !count(attempt.tokens))
+        || (attempt.seconds !== undefined && attempt.seconds !== null && (!number(attempt.seconds) || attempt.seconds < 0))) {
+        throw new Error('The training export has an invalid or duplicate attempt.');
+      }
+      if (attempt.id !== undefined) attemptIds.add(String(attempt.id));
+      if (attempt.reward !== undefined && attempt.reward !== null && (
+        (attempt.status === 'success' && attempt.reward !== 1)
+        || (attempt.status === 'failure' && attempt.reward !== 0)
+        || !['success', 'failure'].includes(String(attempt.status))
+      )) throw new Error('Only scored training attempts may have a binary terminal reward.');
+      if (value.dataset.test_status === 'sealed' && attempt.split === 'sealed_test') throw new Error('Sealed test attempts cannot be published before the test set is opened.');
+    }
+  }
+  return value as unknown as LearningExport;
+}
+
 export function inspectLogUrl(log: string): string {
   return `http://127.0.0.1:7575/#/tasks/${log.split(/[\\/]/).map(encodeURIComponent).join('/')}`;
 }

@@ -1,0 +1,77 @@
+{
+  "case_id": "learn-69c233e33a1d2cf4",
+  "split": "sealed_test",
+  "use": "fixture_validation_only",
+  "witness": [
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-001"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-002"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-003"
+    },
+    {
+      "type": "read",
+      "resource": "message",
+      "resource_id": "message-001"
+    },
+    {
+      "type": "read",
+      "resource": "message",
+      "resource_id": "message-002"
+    },
+    {
+      "type": "request",
+      "request": {
+        "intent": "specialist_evidence",
+        "document_id": "document-002"
+      }
+    },
+    {
+      "type": "wait_until",
+      "at": "2027-04-16T09:07:00-05:00"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-004"
+    },
+    {
+      "type": "wait_until",
+      "at": "2027-04-16T10:23:00-05:00"
+    },
+    {
+      "type": "send_for_signature",
+      "revision_id": "revision-001"
+    },
+    {
+      "type": "wait_until",
+      "at": "2027-04-16T10:41:00-05:00"
+    },
+    {
+      "type": "set_disposition",
+      "disposition": "proceed",
+      "reason": "Public cost evidence, current authority, and execution records support this disposition."
+    },
+    {
+      "type": "finish",
+      "claims": {
+        "disposition": "proceed",
+        "effective_credit_cents": 698400,
+        "executed_revision_ids": [
+          "revision-001"
+        ],
+        "deadline": "2027-04-16T12:53:00-05:00"
+      },
+      "report": "Recorded the authorized disposition and verified the effective terms against transaction records."
+    }
+  ]
+}

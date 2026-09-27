@@ -1,0 +1,101 @@
+{
+  "case_id": "learn-a06227fd950f4f0a",
+  "split": "sealed_test",
+  "use": "fixture_validation_only",
+  "witness": [
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-001"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-002"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-003"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-005"
+    },
+    {
+      "type": "read",
+      "resource": "message",
+      "resource_id": "message-001"
+    },
+    {
+      "type": "read",
+      "resource": "message",
+      "resource_id": "message-002"
+    },
+    {
+      "type": "request",
+      "request": {
+        "intent": "specialist_evidence",
+        "document_id": "document-002"
+      }
+    },
+    {
+      "type": "wait_until",
+      "at": "2027-05-02T10:35:00-05:00"
+    },
+    {
+      "type": "read",
+      "resource": "document",
+      "resource_id": "document-004"
+    },
+    {
+      "type": "request",
+      "request": {
+        "intent": "buyer_authorization",
+        "permission": "credit"
+      }
+    },
+    {
+      "type": "wait_until",
+      "at": "2027-05-02T10:53:00-05:00"
+    },
+    {
+      "type": "draft_amendment",
+      "terms": {
+        "type": "credit",
+        "amount_cents": 1823500
+      },
+      "evidence_ids": [
+        "document-002",
+        "document-004",
+        "document-005"
+      ]
+    },
+    {
+      "type": "send_for_signature",
+      "revision_id": "revision-001"
+    },
+    {
+      "type": "wait_until",
+      "at": "2027-05-02T11:14:00-05:00"
+    },
+    {
+      "type": "set_disposition",
+      "disposition": "proceed",
+      "reason": "Public cost evidence, current authority, and execution records support this disposition."
+    },
+    {
+      "type": "finish",
+      "claims": {
+        "disposition": "proceed",
+        "effective_credit_cents": 1823500,
+        "executed_revision_ids": [
+          "revision-001"
+        ],
+        "deadline": "2027-05-02T15:05:00-05:00"
+      },
+      "report": "Recorded the authorized disposition and verified the effective terms against transaction records."
+    }
+  ]
+}
