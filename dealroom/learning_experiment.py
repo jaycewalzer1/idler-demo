@@ -436,6 +436,7 @@ class Experiment:
         if self.state["protocol_sha256"] != fingerprint(self.protocol):
             raise ValueError("State belongs to another protocol.")
         self.model_path = Path(self.protocol["model_source"]["path"])
+        self.startup_implementation = {str(path): file_digest(ROOT / path) for path in IMPLEMENTATION_FILES}
 
     def save(self) -> None:
         atomic_json(self.directory / "state.json", self.state)
@@ -456,6 +457,8 @@ class Experiment:
                 raise ValueError("Supervised data changed after protocol freeze.")
         if freeze_implementation:
             implementation = {str(path): file_digest(ROOT / path) for path in IMPLEMENTATION_FILES}
+            if implementation != self.startup_implementation:
+                raise RuntimeError("Implementation changed while this process was queued; restart the queued process before GPU work.")
             frozen_path = self.directory / "implementation.json"
             if frozen_path.exists() and read_json(frozen_path) != implementation:
                 raise ValueError("Implementation changed after the first run; use a new experiment version.")

@@ -107,6 +107,14 @@ def test_implementation_freeze_waits_for_baseline_gpu_handoff(experiment, monkey
     assert calls == [{"freeze_implementation": False}]
 
 
+def test_changed_loaded_code_blocks_before_gpu_handoff(experiment):
+    experiment.protocol["data_files"] = {}
+    experiment.startup_implementation["dealroom/learning_experiment.py"] = "previously-loaded-code"
+    with pytest.raises(RuntimeError, match="changed while this process was queued"):
+        experiment.verify_inputs()
+    assert not (experiment.directory / "implementation.json").exists()
+
+
 def test_coverage_does_not_treat_compute_cutoffs_as_failure():
     attempts = [
         {"id": "a", "status": "success", "reward": 1, "total_tokens": 21, "duration_seconds": 2.5},
