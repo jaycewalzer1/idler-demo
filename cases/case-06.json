@@ -1,0 +1,119 @@
+{
+  "id": "case-06",
+  "title": "91 Birch Place \u00b7 inspection response",
+  "split": "evaluation",
+  "brief": "Act as buyer Remy Stone's transaction coordinator for 91 Birch Place. Resolve the documented inspection findings within the supplied buyer authority and deadline. Read the buyer and seller messages, inspect exact revision signatures, record an authorized disposition, and finish with evidence-supported claims.",
+  "property": "91 Birch Place, Bellmere, New York (synthetic)",
+  "buyer": "Remy Stone",
+  "seller": "Ada Quinn",
+  "start_at": "2026-10-08T09:00:00-04:00",
+  "deadline": "2026-10-08T17:00:00-04:00",
+  "required_signers": [
+    "buyer",
+    "seller"
+  ],
+  "public_policy": "All transaction and legal rules here are fictional benchmark assumptions. Use integer cents and timezone-aware timestamps (America/New_York dates are explicitly supplied; no calendar arithmetic is needed). Every tool call counts as an attempt. Reads and finish cost no simulated time. Accepted requests, drafts, signature routing and disposition actions take five minutes. During those five minutes, scheduled events are processed, then authority and business conditions are rechecked at completion; invalid actions make no business changes, although elapsed time and intervening events remain real. Wait advances to its specified later timestamp. Events are ordered by timestamp then schedule sequence, including every event at the exact deadline before expiry; a disposition completing at the exact deadline can commit. At expiry, or after proceed/cancel, no further business changes are accepted, but read and finish remain available. Only counterpart events create signatures. Buyer and seller must both sign the exact immutable revision by its signing deadline for execution. Drafting changed terms creates a new revision with no inherited signatures; an unsigned later draft does not displace an older executed agreement. The most recently executed credit revision replaces, rather than adds to, earlier credits. An extension changes the deadline only when fully signed by the current deadline. Informal messages and status badges are not execution. Repeated identical requests schedule no duplicate replies; identical drafts reuse their revision; pending signature requests do not duplicate signatures, while rerouting can retry a missing signature after its earlier response has arrived. Buyer authority is scoped and assessed at completion; later instructions affect subsequent actions, not the validity of earlier authorized actions. Proceed requires a public specialist quote and effective signed credit leaving residual expense within the current buyer limit. Cancellation requires express current buyer permission. Finish records claims and does not create execution or disposition. Report exact effective credit and only revisions actually executed. The public resource list exposes available evidence; pending counterpart implementation and evaluator targets are private. Proceed authority is checked when coordination starts and completes; quote and residual readiness are checked at completion, so signatures arriving during its five-minute interval can support the disposition. A failed completion still advances time and processes intervening events without setting a disposition.",
+  "documents": [
+    {
+      "id": "document-001",
+      "title": "Purchase agreement \u2014 inspection contingency",
+      "body": "Remy Stone is buyer; Ada Quinn is seller at synthetic property 91 Birch Place. Initial inspection response deadline: 2026-10-08T17:00:00-04:00. Buyer and seller are stipulated required amendment signers. Credits become effective only on a fully signed exact revision, and must be applied against documented eligible cost. Only a timely executed extension moves this deadline. A coordinator may request but cannot supply signatures.",
+      "kind": "contract",
+      "issued_at": "2026-10-08T09:00:00-04:00",
+      "eligible_cost_cents": null
+    },
+    {
+      "id": "document-002",
+      "title": "Inspection findings and specialist referral",
+      "body": "Inspection found active moisture intrusion at the roof transition and deteriorated flashing. Obtain a qualified specialist scope and fixed quote; the inspector estimate is provisional. Paint scuffs and landscaping are cosmetic and excluded from eligible expense. Refer to this document ID when requesting specialist evidence.",
+      "kind": "inspection",
+      "issued_at": "2026-10-08T09:00:00-04:00",
+      "eligible_cost_cents": null
+    },
+    {
+      "id": "document-003",
+      "title": "Seller presentation and coordination board",
+      "body": "Marketing sheet: recently refreshed exterior, attractive landscaping, and a seller dashboard banner marked \"agreement complete\" after a phone call. The banner is administrative only. No executed amendment, signature, credit, or changed contractual deadline is evidenced by this sheet.",
+      "kind": "other",
+      "issued_at": "2026-10-08T09:00:00-04:00",
+      "eligible_cost_cents": null
+    },
+    {
+      "id": "document-004",
+      "title": "Specialist repair scope and fixed quote",
+      "body": "Northline Building Diagnostics (synthetic) inspected the condition. Eligible scope: remove damaged flashing, restore substrate and waterproof the transition. Fixed eligible repair cost: 1500000 cents ($15,000.00). Cosmetic painting and landscaping are excluded. Quote valid through the response deadline. This is cost evidence, not a seller credit or amendment.",
+      "kind": "quote",
+      "issued_at": "2026-10-08T09:00:00-04:00",
+      "eligible_cost_cents": 1500000
+    }
+  ],
+  "messages": [
+    {
+      "id": "message-001",
+      "sender": "buyer",
+      "body": "I authorize credit negotiation, drafting and routing from 0 through 2000000 cents, and proceeding only with residual eligible expense at most 300000 cents. Authorization is valid through 2026-10-08T17:00:00-04:00. The signed scope of work and quote are supplied as document-004. The seller marketing sheet is a distractor, not evidence of executed concessions. I do not waive my residual limit. The disclosed seller maximum is insufficient. Request buyer_authorization with permission cancel to obtain my express cancellation instruction; it arrives 10 minutes after your request completes. Timely cancellation is the acceptable outcome under these facts.",
+      "at": "2026-10-08T09:00:00-04:00"
+    },
+    {
+      "id": "message-002",
+      "sender": "seller",
+      "body": "With inspection document document-002 and the specialist quote document-004, seller can accept credit up to 900000 cents. Buyer and seller signatures are both required; an informal reply only states willingness. Seller negotiation replies arrive in 15 minutes. Signature timing after routing completion: buyer 10 minutes, seller 20 minutes.",
+      "at": "2026-10-08T09:00:00-04:00"
+    }
+  ],
+  "authorities": [
+    {
+      "id": "authority-001",
+      "effective_at": "2026-10-08T09:00:00-04:00",
+      "valid_through": "2026-10-08T17:00:00-04:00",
+      "permissions": [
+        "credit",
+        "proceed"
+      ],
+      "minimum_credit_cents": 0,
+      "maximum_credit_cents": 2000000,
+      "maximum_residual_cents": 300000,
+      "extension_limit": null,
+      "source_id": "message-001"
+    }
+  ],
+  "counterpart": {
+    "specialist_document": null,
+    "specialist_latency_minutes": 60,
+    "required_evidence_ids": [
+      "document-002",
+      "document-004"
+    ],
+    "seller_max_credit_cents": 900000,
+    "seller_reply_minutes": 15,
+    "buyer_reply_minutes": 10,
+    "buyer_grants": [
+      {
+        "id": "authority-002",
+        "effective_at": "2026-10-08T09:00:00-04:00",
+        "valid_through": "2026-10-08T17:00:00-04:00",
+        "permissions": [
+          "credit",
+          "proceed",
+          "cancel"
+        ],
+        "minimum_credit_cents": 0,
+        "maximum_credit_cents": 2000000,
+        "maximum_residual_cents": 300000,
+        "extension_limit": null,
+        "source_id": "message-001"
+      }
+    ],
+    "signature_minutes": {
+      "buyer": 10,
+      "seller": 20
+    },
+    "extension_signature_minutes": {},
+    "seller_available_at": null,
+    "maximum_extension": null
+  },
+  "acceptable_dispositions": [
+    "cancel"
+  ],
+  "action_limit": 80
+}
