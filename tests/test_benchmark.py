@@ -162,6 +162,42 @@ def test_error_recovery_discards_stale_success_fields(canonical_logs):
     assert recovered["actions"] == len(log.samples[0].metadata["dealroom"]["actions"])
 
 
+@pytest.mark.parametrize("sample_written", [True, False])
+@pytest.mark.parametrize("has_error", [True, False])
+def test_operator_cancellation_is_incomplete_even_with_recorded_errors(
+    canonical_logs, sample_written, has_error
+):
+    log = canonical_logs["error"].model_copy(deep=True)
+    attempt = planned(log)
+    attempt.update(status="error", reward=1, run_id="stale-success")
+    log.status = "cancelled"
+    if has_error:
+        log.samples[0].error.message = "CancelledError: cancelled by operator"
+        log.error = log.samples[0].error.model_copy(deep=True)
+    else:
+        log.samples[0].error = None
+        log.error = None
+    if not sample_written:
+        log.samples = []
+    result = summarize_log(log, attempt)
+    assert result["status"] == "incomplete" and result["reward"] is None
+    assert "Operator interrupted" in result["reason"] and "unscored" in result["reason"]
+    assert "run_id" not in result
+    if sample_written:
+        assert result["actions"] == len(log.samples[0].metadata["dealroom"]["actions"])
+        assert result["tool_calls"] == sum(e.event == "tool" for e in log.samples[0].events)
+
+
+@pytest.mark.parametrize("message", ["ConnectionError: runtime disconnected", "CancelledError"])
+def test_error_text_does_not_reclassify_a_non_cancelled_log(canonical_logs, message):
+    log = canonical_logs["error"].model_copy(deep=True)
+    assert log.status != "cancelled"
+    log.samples[0].error.message = message
+    result = summarize_log(log, planned(log))
+    assert result["status"] == "error" and result["reward"] is None
+    assert result["reason"] == message
+
+
 @pytest.mark.parametrize("status", ["success", "failure", "error", "limit"])
 def test_canonical_activity_counts_are_reported_for_scored_and_unscored_logs(
     canonical_logs, status

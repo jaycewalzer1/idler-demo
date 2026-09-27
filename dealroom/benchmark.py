@@ -174,13 +174,18 @@ def summarize_log(log: EvalLog, attempt: dict) -> dict:
     result["completed_at"] = log.stats.completed_at or now()
     if log.eval.model != attempt["model_id"]:
         raise ValueError("The Inspect log does not match the planned model.")
+    cancelled = log.status == "cancelled"
+    cancellation_reason = "Operator interrupted the evaluation; this attempt is incomplete and unscored."
     samples = log.samples or []
     if len(samples) != 1:
-        result.update(
-            status="error" if log.error else "incomplete",
-            reason=log.error.message if log.error else "No complete sample record was written.",
-            reward=None,
-        )
+        if cancelled:
+            result.update(status="incomplete", reason=cancellation_reason, reward=None)
+        else:
+            result.update(
+                status="error" if log.error else "incomplete",
+                reason=log.error.message if log.error else "No complete sample record was written.",
+                reward=None,
+            )
         return result
     sample = samples[0]
     if sample.started_at:
@@ -212,7 +217,9 @@ def summarize_log(log: EvalLog, attempt: dict) -> dict:
             or record.get("compaction_threshold") != declared["compaction_threshold"]
         ):
             raise ValueError("The recorded episode policy differs from its declared configuration.")
-    if sample.error:
+    if cancelled:
+        result.update(status="incomplete", reason=cancellation_reason, reward=None)
+    elif sample.error:
         result.update(status="error", reason=sample.error.message, reward=None)
     elif sample.limit:
         result.update(status="limit", reason=str(sample.limit), reward=None)
