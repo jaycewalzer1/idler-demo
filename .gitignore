@@ -5,6 +5,7 @@ __pycache__/
 *.egg-info/
 web/node_modules/
 web/dist/
+*.tsbuildinfo
 logs/
 .env
 .DS_Store

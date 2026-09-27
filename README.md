@@ -125,6 +125,8 @@ uv run ruff check dealroom tests
 npm --prefix web run build
 ```
 
+Build verification on September 27, 2026: **53 tests passed**, Ruff passed, and the production frontend built successfully. Eight canonical Inspect logs contain seven successful scripted outcomes and the expected flagship failure, with zero execution errors, limits, or incomplete attempts.
+
 Verified behavior includes every witness and failed/repaired result; prefix equality; initial trap records; old revision and missing signatures; expired/historical authority and authority changes during coordination; late execution; duplicate requests; exact-deadline ordering; extension effects; action limits; concurrent sample isolation; actual public-only model requests; rejected final-claim correction; fixture-change rejection; score/export equality; error and limit denominators; and all seven tools through Inspect. Browser checks covered desktop and 390px widths, default traces, uploads, malformed/empty exports, keyboard navigation, changing evidence, timeline controls, and comparison switching. No browser console errors were observed.
 
 ## SilverKey source ledger
