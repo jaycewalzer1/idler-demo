@@ -337,6 +337,18 @@ def stop_owned_process(record: dict) -> None:
         os.kill(identity["pid"], signal.SIGKILL)
 
 
+def stop_child(process: subprocess.Popen) -> None:
+    """Reap our live child even if macOS rewrites its Python command after exec."""
+    if process.poll() is not None:
+        return
+    process.terminate()
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=10)
+
+
 def baseline_is_complete(report: dict) -> bool:
     if report.get("id") != BASELINE_ID:
         raise ValueError("The baseline report is from a different experiment.")
@@ -567,8 +579,7 @@ class Experiment:
                 atomic_json(self.directory / f"server-canary-{checkpoint['id']}.json", receipt)
                 yield
             finally:
-                stop_owned_process(child)
-                process.wait(timeout=10)
+                stop_child(process)
                 (self.directory / "child.json").unlink(missing_ok=True)
 
     def attempt(self, stage: str, split: str, case_id: str, checkpoint: dict,
@@ -723,8 +734,7 @@ class Experiment:
                     raise RuntimeError(f"Trainer exited with code {process.returncode}; inspect {output / 'process.log'}.")
             finally:
                 if process.poll() is None:
-                    stop_owned_process(child)
-                    process.wait(timeout=10)
+                    stop_child(process)
                 (self.directory / "child.json").unlink(missing_ok=True)
         return self.commit_training(job_id, output, mode, data_path, parent)
 

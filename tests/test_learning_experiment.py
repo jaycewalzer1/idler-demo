@@ -268,3 +268,26 @@ def test_native_inspect_canonical_replay_and_unscored_limits(protocol, tmp_path,
     result = summarize_learning_log(interrupted, planned, base_checkpoint(), protocol)
     assert result["status"] == ("limit" if kind == "limit" else "incomplete")
     assert result["reward"] is None
+
+
+def test_live_child_shutdown_escalates_and_reaps():
+    import subprocess
+    from unittest.mock import Mock
+
+    process = Mock()
+    process.poll.return_value = None
+    process.wait.side_effect = [subprocess.TimeoutExpired("server", 5), 0]
+    experiment_module.stop_child(process)
+    process.terminate.assert_called_once()
+    process.kill.assert_called_once()
+    assert process.wait.call_count == 2
+
+
+def test_exited_child_is_not_signalled():
+    from unittest.mock import Mock
+
+    process = Mock()
+    process.poll.return_value = 0
+    experiment_module.stop_child(process)
+    process.terminate.assert_not_called()
+    process.kill.assert_not_called()
