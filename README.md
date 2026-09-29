@@ -1,67 +1,58 @@
 # DealRoom
 
-A synthetic transaction environment for evaluating tool-using agents, with a research console for comparing models and inspecting tasks, trajectories, state, and verifier evidence. Inspect AI provides the native model integration, ReAct loop, tools, evaluation logs, limits, scorer, and full transcript viewer.
+DealRoom is a synthetic transaction environment for evaluating and training tool-using language models. Agents gather evidence, negotiate terms, execute agreements, and commit a final decision under explicit authority and deadline constraints. A deterministic Python verifier scores the resulting state. A local research console displays model comparisons, trajectories, and training results; Inspect AI supplies the agent loop, tools, and native evaluation logs.
 
-The current comparison, `dealroom-local-48-text-tools-v4`, runs **48 generated tasks through two downloaded local models: Qwen3 8B and Llama 3.1 8B, for 96 fresh planned attempts**. This is actual local inference through Inspect's native Ollama provider, with Inspect's built-in text tool emulation enabled identically for both models. Task prompts, tools, and emulation are unchanged from v3; the expanded episode and compute budgets are unchanged from v2. Version 4 corrects canonical scoring of operational cutoffs. The original six curated cases and eight scripted demonstrations remain available in the replay library and are excluded from model results.
+**The completed experiment found a large difference between two local 8B models, followed by little improvement from a small Llama training run.** Qwen3 8B passed 13 of 32 scored tasks; Llama 3.1 8B passed 1 of 46. Coverage differed, so both the scores and unscored outcomes matter. In a separate controlled learning experiment, supervised fine-tuning and SFT followed by RL each passed the same two of 64 held-out tasks. There was no measured additional task-success gain from RL.
 
-**Evaluation status:** v4 is complete: Llama passed 1/46 scored attempts (2 limits); Qwen passed 13/32 (15 limits and 1 operator interruption). All 96 planned attempts are recorded. See the write-up outline below for coverage, interpretation, and the completed learning follow-up. The v1 partial run, v2 native-tool diagnostic, and interrupted v3 run are archived separately, and none of their outcomes are merged into v4. Within each experiment, tasks, model digests, prompts, tools, tool-calling format, scoring policy, and limits are frozen; individual outcomes are not retried or selected away.
+[Model comparison](reports/model-comparison.md) · [Failure investigation](reports/llama-diagnosis.md) · [Learning results](reports/learning-results.md) · [Training reproduction](training/README.md) · [Open the console](#open-the-console)
 
-## Llama failure investigation
+## What the environment measures
 
-The first 16 completed Llama v4 attempts were audited against raw model requests and responses, parsed calls, public facts, and deterministic replay. Thirteen explicitly waited to contractual expiry; three finished without a valid disposition. None hit an Inspect limit or infrastructure error. All 119 tagged calls matched parsed calls. The public facts were sufficient to solve every audited case. See `reports/llama-diagnosis.md` for the case table and evidence.
+The question was whether similarly sized local instruction-following models could reliably complete multi-step transactions with the same tools and public information. Success required gathering evidence, obtaining authority, drafting the right revision, collecting its signatures, managing time, committing proceed or cancel, and reporting the recorded outcome. A plausible explanation, informal agreement, or unsigned draft did not satisfy the objective.
 
-Zero successful document or message reads did **not** mean zero evidence exposure: eight attempts received all current public resource bodies in failed-read responses. This inconsistent presentation is an interface weakness, but no evidence was dropped by transport. Seven expiry failures occurred after the seller facts had reached the model.
+The original benchmark contained 48 programmatically generated scenarios: six variants across each of eight behavioral families. Each model attempted every scenario once. The six original curated cases and eight scripted demonstrations remained separate from the benchmark. Every generated case had a private engine-verified successful witness, establishing solvability without giving the evaluated model a solution.
 
-Six separate diagnostic trials tested two selected cases with clearer resource-read instructions, initially preloaded public evidence, or an explicit explanation of tool effects. All six remained objective failures, without compute limits. Clearer read instructions enabled Llama to execute the correct credit amendment in `synth-007`, but it reported proceed without committing a disposition. Even with explicit tool-effect guidance, it later waited to expiry after routing the correct amendment; on `synth-025`, it read every initial document and message but omitted the required extension. These probes show sensitivity to the interface and persistent planning/tool-contract mistakes. They do not establish a general capability ranking or prove a broken evaluator.
+The verifier checked actual transaction records, authority, signatures, deadlines, constraints, and structured final claims without an LLM judge. Operational limits and errors were unscored; they were not converted into objective failures. A model action that let the fictional contract expire was an objective failure because the transaction could no longer be completed.
 
-The six logs and two reports live under `logs/diagnostics/`; they are excluded from the model matrix. `uv run --extra openai python -m dealroom.diagnostics` reproduces the first two conditions on the selected cases; add `--conditions explicit_tool_semantics` for the follow-up condition. Run these only with exclusive access to Ollama. Each probe starts fresh and uses the unchanged task tools, engine, scorer, model digest, and numeric budgets. Only the declared public input supplement changes; no private witness is supplied. The first report inherits baseline configuration prose; its condition labels and recorded input supplements identify the actual ablations.
+## Original model comparison
 
-The batch was temporarily interrupted for these diagnostics. Qwen `synth-044` is retained as an **incomplete, unscored operator interruption**, with its original log and measured serving context; it is not retried or counted as model failure. Canonical cancelled logs are now distinguished from genuine execution errors. The matched run subsequently completed under its original frozen conditions.
-
-## Local training experiment
-
-The separate learning pipeline compares the original workflow, a clarified
-workflow, a supervised LoRA checkpoint, and an environment-reward-trained
-checkpoint on the same MLX Llama 3.1 8B base. It uses 256 training scenarios,
-32 validation scenarios, and 64 sealed composition holdouts. The original Ollama
-comparison is complete and remains a separate experiment. See [training/README.md](training/README.md)
-for the protocol and reproduction commands. The **Training experiment** console
-tab reads live `learning.json`; pending stages have no invented scores.
-
-## Write-up outline: comparing two 8B agents, investigating failure, and attempting learning
-
-Suggested title: **Same model size, different execution reliability: a DealRoom case study**.
-
-The central result is a large observed gap in the original local comparison, followed by a small supervised gain and no measured additional RL gain. Distinguish recorded behavior from hypotheses about its cause. “First comparison” below means the first **completed matched comparison**, v4; earlier partial runs are methodological history, not additional samples.
-
-### 1. Question and environment
-
-- Ask whether two similarly sized local instruction-following models can complete multi-step transactions using the same tools and public information.
-- Explain the task: gather evidence, obtain authority, draft the correct revision, obtain its signatures, manage the deadline, commit proceed/cancel, and report the recorded outcome.
-- Explain the verifier: deterministic checks of actual state, authority, signatures, timing, and final claims. A plausible narrative or an unsigned agreement is insufficient. A private successful witness establishes that a case is solvable; it is never supplied to the evaluated agent.
-- Introduce 48 generated scenarios across eight families, six variants per family, one attempt per model/scenario. The original six curated cases and scripted demonstrations are excluded.
-
-### 2. Original comparison: setup and measured results
-
-Use experiment `dealroom-local-48-text-tools-v4`: Ollama 0.31.1, Inspect AI 0.3.271, Q4_K_M downloads of Llama 3.1 8B and Qwen3 8B, on an M4 Max with 36 GB RAM. Both use Inspect text-tool emulation, temperature 0, seed 20260927, thinking disabled, and identical task/tool/scorer settings. Exact downloaded digests are in [benchmark.json](web/public/benchmark.json).
+The completed experiment, `dealroom-local-48-text-tools-v4`, used Ollama 0.31.1, Inspect AI 0.3.271, Q4_K_M downloads of Llama 3.1 8B and Qwen3 8B, on an M4 Max with 36 GB RAM. Both used Inspect text-tool emulation, temperature 0, seed 20260927, thinking disabled, and identical task/tool/scorer settings. Exact downloaded digests are in [benchmark.json](web/public/benchmark.json).
 
 | Model | Successes / scored | Success rate | Scored / planned | Objective failures | Limits | Errors | Incomplete |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Llama 3.1 8B | 1 / 46 | 2.2% | 46 / 48 | 45 | 2 | 0 | 0 |
 | Qwen3 8B | 13 / 32 | 40.6% | 32 / 48 | 19 | 15 | 0 | 1 |
 
-**Interpretation:** Qwen completed more tasks successfully, but 40.6% versus 2.2% uses different scored subsets. Do not describe that ratio as a clean capability multiplier. Limits are unknown outcomes, not failures. Qwen's one incomplete attempt was an operator interruption during diagnosis. Twelve of its thirteen successes came from revised-credit execution and cancellation authority (six each); the remaining success was a partial-signature retry. Llama's one success was also in the retry family. The advantage was concentrated, not uniform across all task families.
+**Interpretation:** Qwen completed more tasks successfully, but 40.6% versus 2.2% uses different scored subsets. Their ratio is therefore not a clean capability multiplier. Limits are unknown outcomes, not failures. Qwen's one incomplete attempt was an operator interruption during diagnosis. Twelve of its thirteen successes came from revised-credit execution and cancellation authority (six each); the remaining success was a partial-signature retry. Llama's one success was also in the retry family. The advantage was concentrated, not uniform across all task families.
 
-### 3. Why equal parameter counts did not imply equal performance
+### Why two 8B models behaved so differently
 
-- **Model size is not a controlled training history.** The models have different learned weights, architectures, tokenizers, and training recipes. Their model cards describe separate pretraining/post-training and instruction/agent capabilities; the “8B” label does not match those factors. Use the [Qwen3 model card](https://huggingface.co/Qwen/Qwen3-8B) and [Llama 3.1 model card](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) as background, not causal evidence for this experiment.
-- **Leading hypothesis: different reliability with this tool interface and action sequence.** Llama repeatedly confused requesting with executing, reporting with committing, and waiting for a response with advancing to the final deadline. These are observed mistakes; attributing them to a particular pretraining or post-training difference is unproven.
-- **Interface burden may amplify that difference.** Nested argument schemas, resource IDs, exact revisions, and recovery from rejected calls all matter. An identical interface controls exposure but need not be equally familiar to both models. Quantization, templates, and decoding remain possible contributors; no precision or alternative-template ablation isolated them. Qwen's result cannot be attributed to enabled thinking: it was disabled in this run.
-- **Whole-task scoring amplifies a missed final step.** Correct arithmetic and even a signed amendment still receive zero if the agent never commits a valid disposition. Illustrate with an actual trajectory rather than describing Llama as unable to understand every part of the task.
+Parameter count measures size, not equal training or equal execution reliability. The models have different learned weights, architectures, tokenizers, and training recipes. Their official [Qwen3](https://huggingface.co/Qwen/Qwen3-8B) and [Llama 3.1](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) model cards document separate pretraining and post-training approaches. Those differences make a performance gap plausible, but this experiment did not isolate which training choice caused it.
 
-### 4. Investigate the harness before blaming the model
+The strongest explanation supported by our trajectories is that Llama was less reliable at following this environment's tool contracts and sequencing actions. It repeatedly treated negotiation as execution, a final report as a committed decision, and a wait for a reply as a reason to advance directly to the contractual deadline. The mistakes were often procedural rather than arithmetic: a correct credit calculation did not help when the model routed the wrong revision or omitted the final state-changing action.
 
-Audit the first 16 completed Llama v4 failures against raw requests/responses, parsed calls, public evidence, and deterministic replay:
+The interface likely contributed to the difficulty. Calls required nested arguments, exact resource IDs, and recovery from rejected requests. An identical interface controlled what each model received, but did not establish equal familiarity with that format. Quantization, chat templates, and decoding remain possible contributors; we did not isolate them through precision or template ablations. Qwen's advantage was not an enabled-thinking comparison: thinking was disabled in the benchmark.
+
+Whole-task binary scoring also magnified a missed step. An agent could execute a correct amendment and still fail by never committing an authorized disposition. That is appropriate for the stated transaction objective, but it hides intermediate progress unless the trajectory is inspected. The result supports a difference in reliability under this configuration, not a universal ranking of all 8B models.
+
+### Results by task family
+
+Each cell gives successes / scored attempts; parentheses show scored coverage out of six planned tasks.
+
+| Family | Llama 3.1 8B | Qwen3 8B |
+| --- | ---: | ---: |
+| Quote discovery | 0 / 5 (5 / 6) | 0 / 3 (3 / 6) |
+| Straightforward execution | 0 / 5 (5 / 6) | 0 / 3 (3 / 6) |
+| Partial signature retry | 1 / 6 (6 / 6) | 1 / 6 (6 / 6) |
+| Revised credit execution | 0 / 6 (6 / 6) | 6 / 6 (6 / 6) |
+| Deadline extension | 0 / 6 (6 / 6) | 0 / 2 (2 / 6) |
+| Cancellation authority | 0 / 6 (6 / 6) | 6 / 6 (6 / 6) |
+| Credit authority refresh | 0 / 6 (6 / 6) | 0 / 3 (3 / 6) |
+| Boundary timing | 0 / 6 (6 / 6) | 0 / 3 (3 / 6) |
+
+## Investigating Llama’s failures
+
+Before attributing the failures to the model, we audited the first 16 completed Llama v4 attempts against raw requests and responses, parsed calls, public evidence, and deterministic replay:
 
 | Check | Recorded finding | What it supports |
 | --- | --- | --- |
@@ -71,20 +62,34 @@ Audit the first 16 completed Llama v4 failures against raw requests/responses, p
 | Evidence exposure | 8 received full public bodies through failed-read responses; 7 expiry failures occurred after seller facts were exposed | Zero successful reads did not mean zero evidence exposure. |
 | Scorer replay | No acceptable completed disposition was incorrectly rejected | No demonstrated false failure in these 16; this is not proof that every component is defect-free. |
 
-Include concrete examples: `synth-020` computed the correct credit but routed the old revision; `synth-025` waited to expiry without executing the required extension. Also disclose the real harness weakness: failed reads could expose more public information than successful selected-resource reads. Do not present the investigation as finding a perfectly clean interface.
+The audit found a genuine interface weakness: a rejected resource read could expose more public information than a successful selected-resource read. Thus, zero successful document reads did not imply that the model had never seen their contents. Seven expiry failures occurred after seller facts were already in its context. This inconsistency complicated interpretation, but did not explain away those recorded actions. The [full investigation](reports/llama-diagnosis.md) preserves the case-level evidence and scope of the audit.
 
-### 5. Remedies, in order, and what each tested
+### A correct calculation was not a completed transaction
 
-1. **Expand budgets and separate cutoff from failure.** Preserve the early partial v1 run; conduct an expanded native-tool v2 diagnostic; use shared text-tool emulation in v3; correct unfinished/limited samples to canonical unscored outcomes in v4. Keep runs separate rather than pooling favorable results. Final matched budgets: 40,960-token context; history trimming at 28,672; 2,048 output tokens per generation; 2,000,000 cumulative tokens; 128 turns; 512 messages; 900 seconds; 256 domain actions. Contractual expiry remains an objective failure, distinct from any compute limit.
-2. **Run six isolated interface probes.** On `synth-007` and `synth-025`, try clearer resource-read instructions, public evidence supplied upfront, and then explicit tool-effect instructions. Hold weights, engine, scorer, tools, and numeric budgets fixed. All six failed objectively, without compute cutoffs. Clearer reads nevertheless produced a fully signed correct credit on `synth-007`; the agent then omitted `set_disposition`. Supplying evidence alone did not solve execution.
-3. **Create a separate clarified workflow.** Explain resource IDs, integer cents, exact-revision execution, waiting to intermediate response times, verifying accepted receipts, and `set_disposition` versus `finish`. Normalize rejected-read observations to the public resource index. Preserve the original adapter and benchmark. See [learning_task.py](dealroom/learning_task.py).
-4. **Freeze a new learning experiment.** Use 256 training cases, 32 validation cases, and 64 sealed composition holdouts, excluding the original 48 investigated cases. Use one pinned MLX Llama checkpoint for all four learning conditions. MLX 4-bit differs from Ollama Q4_K_M, so do not compare their percentages as a continuous before/after series.
-5. **Supervised fine-tuning (SFT).** Export successful scripted trajectories into the actual inference wire format: 3,064 training decision rows and 380 validation rows. Train final-assistant-completion loss for 128 Adam updates, batch size 1, learning rate `2e-5`, rank-8 LoRA on query/value projections in the final eight layers (851,968 trainable parameters). Select the fixed final checkpoint. This was a short pilot, not an epoch over all 3,064 rows. See [learning_data.py](dealroom/learning_data.py) and [learning_train.py](dealroom/learning_train.py).
-6. **Repair training infrastructure without changing the experiment objective.** Archive the failed v1 memory preflight. In v2, bound attention/feed-forward gradient memory with 256-token blocks, materialize layer gradients sequentially, and compute the frozen prefix outside autodiff. Preserve context and targets; verify gradients and full 24,576-token SFT/policy stress runs. Later repair owned-child shutdown after the SFT server failed to exit, archive the exact implementation amendment, and resume from saved receipts/checkpoints without discarding attempts. These repairs enabled execution; they were not capability improvements.
-7. **Environment-reward learning.** Start from SFT. Run eight prescribed groups of four fresh stochastic trajectories, one training case per group: 32 rollouts on eight unique cases. Use population-standardized group-relative REINFORCE, temperature 1, learning rate `1e-6`, exact sampled token IDs, and one accumulated update per nonconstant-reward group. Train on binary success plus a bounded semantic state-progress term (maximum potential 0.2); keep evaluation binary. Six groups produced updates; two equal-reward groups skipped. The conditional eight extra groups required fewer than two updates, so they did not trigger. This implementation is not PPO. See [learning_policy.py](dealroom/learning_policy.py).
-8. **Freeze checkpoints, then evaluate once.** Complete validation before opening the sealed set. Evaluate all four conditions under common learning budgets, including 1,800 seconds per attempt, 128 turns, 512 messages, 2 million cumulative tokens, and 256 actions. Preserve errors and limits as unscored. Verify adapter identities and export receipts/results. The run completed September 28, 2026 at 23:39 UTC. See [protocol.json](training/experiment-v2/protocol.json) and [learning results](reports/learning-results.md).
+In the original `synth-020` attempt, Llama calculated the required new credit as 552,000 cents but routed `revision-001` instead of the changed `revision-002`. The old effective credit left 280,000 cents of residual cost, above the 190,000-cent limit. The engine rejected proceeding, and the model subsequently reported success without a valid disposition.
 
-### 6. Did the remedies help?
+A separate diagnostic on `synth-007` showed why intermediate progress matters:
+
+| Step | Recorded behavior | Consequence |
+| --- | --- | --- |
+| Read guidance changed | The prompt explained how to retrieve indexed resources. | The model could use the relevant evidence. |
+| Amendment completed | The correct credit became fully signed. | This was genuine progress over the original failed attempt. |
+| Final action omitted | The model reported proceed in `finish` without committing it through `set_disposition`. | The transaction remained unresolved and correctly failed the verifier. |
+
+Neither example establishes that the scorer rejected a completed solution. They show a gap between identifying useful terms, executing the relevant agreement, and completing the entire workflow.
+
+## Remediation and learning experiment
+
+1. **Expanded budgets and corrected cutoff scoring.** We archived the early partial v1 run, conducted an expanded native-tool v2 diagnostic, introduced shared text-tool emulation in v3, and corrected unfinished/limited samples to canonical unscored outcomes in v4. Each run remained separate; outcomes were not pooled. Final matched budgets: 40,960-token context; history trimming at 28,672; 2,048 output tokens per generation; 2,000,000 cumulative tokens; 128 turns; 512 messages; 900 seconds; 256 domain actions. Contractual expiry remains an objective failure, distinct from any compute limit.
+2. **Ran six isolated interface probes.** On `synth-007` and `synth-025`, we tested clearer resource-read instructions, public evidence supplied upfront, and then explicit tool-effect instructions. We held weights, engine, scorer, tools, and numeric budgets fixed. All six failed objectively, without compute cutoffs. Clearer reads nevertheless produced a fully signed correct credit on `synth-007`; the agent then omitted `set_disposition`. Supplying evidence alone did not solve execution.
+3. **Created a separate clarified workflow.** We explained resource IDs, integer cents, exact-revision execution, waiting to intermediate response times, verifying accepted receipts, and `set_disposition` versus `finish`. Rejected reads consistently returned the public resource index. The original adapter and benchmark remained unchanged. See [learning_task.py](dealroom/learning_task.py).
+4. **Froze a new learning experiment.** We generated 256 training cases, 32 validation cases, and 64 sealed composition holdouts, excluding the original 48 investigated cases. All four learning conditions used one pinned MLX Llama checkpoint. MLX 4-bit differs from Ollama Q4_K_M: these are separate experiments, not a continuous before/after series.
+5. **Performed supervised fine-tuning (SFT).** We exported successful scripted trajectories into the actual inference wire format: 3,064 training decision rows and 380 validation rows. We trained final-assistant-completion loss for 128 Adam updates, batch size 1, learning rate `2e-5`, rank-8 LoRA on query/value projections in the final eight layers (851,968 trainable parameters). We selected the fixed final checkpoint. This was a short pilot, not an epoch over all 3,064 rows. See [learning_data.py](dealroom/learning_data.py) and [learning_train.py](dealroom/learning_train.py).
+6. **Repaired training infrastructure while preserving the objective.** We archived a failed v1 memory preflight. In v2, attention/feed-forward gradients used 256-token blocks, layer gradients were materialized sequentially, and the frozen prefix ran outside autodiff. Context and targets were preserved; gradient comparisons and full 24,576-token SFT/policy stress runs passed. We later repaired owned-child shutdown after the SFT server failed to exit, archived the exact implementation amendment, and resumed from saved receipts/checkpoints without discarding attempts. These repairs enabled execution; they were not capability improvements.
+7. **Trained with environment rewards.** Starting from SFT, we ran eight prescribed groups of four fresh stochastic trajectories, one training case per group: 32 rollouts on eight unique cases. Training used population-standardized group-relative REINFORCE, temperature 1, learning rate `1e-6`, exact sampled token IDs, and one accumulated update per nonconstant-reward group. Rewards combined binary success with a bounded semantic state-progress term (maximum potential 0.2); evaluation remained binary. Six groups produced updates; two equal-reward groups skipped. The conditional eight extra groups required fewer than two updates, so they did not trigger. This implementation is not PPO. See [learning_policy.py](dealroom/learning_policy.py).
+8. **Froze checkpoints and evaluated the held-out set once.** Validation finished before the sealed set opened. All four conditions used common learning budgets, including 1,800 seconds per attempt, 128 turns, 512 messages, 2 million cumulative tokens, and 256 actions. Errors and limits remained unscored. Adapter identities were verified and receipts/results exported. The run completed September 28, 2026 at 23:39 UTC. See [protocol.json](training/experiment-v2/protocol.json) and [learning results](reports/learning-results.md).
+
+## Learning results
 
 | Learning condition (same MLX base) | Validation successes / scored | Held-out successes / scored | Held-out scored / planned |
 | --- | ---: | ---: | ---: |
@@ -93,11 +98,11 @@ Include concrete examples: `synth-020` computed the correct credit but routed th
 | Clarified + SFT | 2 / 32 | 2 / 64 | 64 / 64 |
 | Clarified + SFT + RL | 2 / 32 | 2 / 64 | 64 / 64 |
 
-The clarified-workflow held-out condition had **25 execution errors**, excluded from scoring; it cannot support a full-coverage workflow comparison. SFT and RL had complete scored coverage and passed the **same two held-out cases**, both 3.125%. SFT validation completion loss decreased from approximately 0.333 to 0.060, but this translated into little whole-task success. The RL training rollouts produced 4 successes out of 32; that is training data on repeated cases, not a held-out improvement estimate.
+The clarified-workflow held-out condition had **25 API connection errors**, excluded from scoring; it cannot support a full-coverage workflow comparison. SFT and RL had complete scored coverage and passed the **same two held-out cases**, both 3.125%. SFT validation completion loss decreased from approximately 0.333 to 0.060, but this translated into little whole-task success. The RL training rollouts produced 4 successes out of 32; that is training data on repeated cases, not a held-out improvement estimate.
 
-### 7. Why the learning attempt might have failed to improve results
+## Why learning may not have improved task success
 
-Label these explanations as hypotheses consistent with the records, not established causes:
+The following hypotheses are consistent with the records, but the experiment did not establish them as causes:
 
 | Possible explanation | Supporting observation | What remains unproven |
 | --- | --- | --- |
@@ -107,11 +112,9 @@ Label these explanations as hypotheses consistent with the records, not establis
 | Composition and sequence difficulty | Sealed cases combine dependencies absent from training/validation families; success requires every necessary step | Which dependencies explain the final failures; that requires a separate trajectory analysis. |
 | Persistent interface/model mismatch | Selected probes improved intermediate behavior but all still failed | Whether a different action interface, template, precision, or model would solve it. |
 
-Do not claim that RL cannot work, that Llama is intrinsically incapable, or that more training is guaranteed to work. The defensible result is narrower: **this fixed, small training protocol produced no additional held-out task-success gain over SFT**. One training seed, one synthetic suite, related case templates, and incomplete workflow coverage limit broader conclusions. The test set is now opened; further tuning must use development data and a new untouched test set for a fresh confirmatory claim.
+This result does not establish that RL cannot work, that Llama is intrinsically incapable, or that more training would necessarily help. The measured conclusion is narrower: **this fixed, small training protocol produced no additional held-out task-success gain over SFT**. One training seed, one synthetic suite, related case templates, and incomplete workflow coverage limit broader conclusions. The test set is now opened; further tuning must use development data and a new untouched test set for a fresh confirmatory claim.
 
-### 8. Evidence to include in the eventual full write-up
-
-Use the original per-model and per-family tables, one annotated Llama failure/repaired-intermediate trajectory, the intervention chronology, SFT loss alongside actual task success, and the final paired SFT/RL outcomes. Link every quantitative claim to the [original benchmark export](web/public/benchmark.json), [native benchmark logs](logs/benchmark/dealroom-local-48-text-tools-v4/), [interface probe reports](logs/diagnostics/), and [per-attempt learning results](reports/learning-attempts.csv). Keep observations, proposed explanations, and future experiments visibly distinct.
+A useful follow-up would first classify failures on development trajectories and test whether recovery demonstrations improve complete workflows. Broader training coverage and more updates would then be separate controlled interventions. Because the original test set has now been opened, any new confirmatory evaluation would require a fresh held-out set. These follow-ups have not been run.
 
 ## Repository results and local artifacts
 
@@ -119,9 +122,11 @@ The completed [model comparison](reports/model-comparison.md), [Llama investigat
 
 ## Open the console
 
-From the project directory:
+Clone the repository, then start the console:
 
 ```sh
+git clone https://github.com/jaycewalzer1/DealRoom.git
+cd DealRoom
 npm --prefix web ci
 npm --prefix web run build
 npm --prefix web run preview
@@ -179,14 +184,16 @@ This command runs a foreground server and installs no automatic startup service.
 OLLAMA_HOST=127.0.0.1:11434 ollama pull qwen3:8b
 OLLAMA_HOST=127.0.0.1:11434 ollama pull llama3.1:8b
 uv run --extra openai python -m dealroom.benchmark \
-  --emulate-tools --id dealroom-local-48-text-tools-v4
+  --emulate-tools --id dealroom-local-reproduction \
+  --output benchmark-state/reproduction.json \
+  --runs-output benchmark-state/reproduction-runs.json
 ```
 
-Run the same benchmark command, including `--emulate-tools` and the v4 ID, to resume. The runner reconstructs outcomes from canonical Inspect logs, preserves completed attempts including errors and limits, and continues remaining work. It rejects changes to model digests, Ollama/Inspect versions, task/engine/scorer hashes, suite fingerprints, settings, or the planned attempt matrix. Each canonical v4 log records `model_args={"emulate_tools": true}`; resume checks this against the selected format, and the report records `config.tool_calling="inspect_text_emulation"` and `config.score_policy="canonical_unscored_limits"`. An interrupted attempt with a canonical record is retained; it is not silently replaced by another outcome. A different experiment requires a new `--id`, `--output`, and `--runs-output`. The runner's bare default ID, `dealroom-local-48-native-v4`, selects a separate native-tool condition; reproduce this text-tool comparison with the explicit command above.
+The reproduction command writes a new experiment to separate files, preserving the included historical results. Run that same command and ID to resume your local reproduction. Resuming the original v4 run instead requires its original local logs and recorded model digests; the GitHub checkout contains result exports, not those raw logs. The runner reconstructs outcomes from canonical Inspect logs, preserves completed attempts including errors and limits, and continues remaining work. It rejects changes to model digests, Ollama/Inspect versions, task/engine/scorer hashes, suite fingerprints, settings, or the planned attempt matrix. Each canonical v4 log records `model_args={"emulate_tools": true}`; resume checks this against the selected format, and the report records `config.tool_calling="inspect_text_emulation"` and `config.score_policy="canonical_unscored_limits"`. An interrupted attempt with a canonical record is retained; it is not silently replaced by another outcome. A different experiment requires a new `--id`, `--output`, and `--runs-output`. The runner's bare default ID, `dealroom-local-48-native-v4`, selects a separate native-tool condition; reproduce the text-tool condition with the explicit command above.
 
 Serving-context measurements are persisted in the report separately from canonical outcome logs. Resume requires a matching historical measurement for each Ollama attempt with recorded tokens. An interruption after log creation but before that measurement is published can stop resume; restore a genuine report backup containing the observation if available, or keep the attempt unvalidated and start a separate experiment. The runner retains the original log and does not repeat that attempt.
 
-Active experiment settings are identical for both models:
+The completed comparison used identical settings for both models:
 
 | Setting | Value |
 | --- | --- |
@@ -257,7 +264,7 @@ The original curated collection remains separate:
 | `case-05` | Evaluation | Credit signatures require an executed deadline extension. |
 | `case-06` | Evaluation | Insufficient seller concession requires express cancellation authority. |
 
-The eight original demonstrations are six fixture witnesses and a paired flagship failure/repaired continuation. Seven succeed and the deliberately flawed script fails. These are explanatory scripts using Inspect's `mockllm/model`, not a model benchmark. Their token accounting is not local-model inference usage. `uv run dealroom demo` regenerates the scripted bundle; the supplied logs already contain these records, so rerunning it is unnecessary for viewing or resuming the matched benchmark.
+The eight original demonstrations are six fixture witnesses and a paired flagship failure/repaired continuation. Seven succeed and the deliberately flawed script fails. These are explanatory scripts using Inspect's `mockllm/model`, not a model benchmark. Their token accounting is not local-model inference usage. `uv run dealroom demo` regenerates the scripted bundle; the included replay export already contains these demonstrations. Regeneration creates new local native logs; raw historical logs are not included in the GitHub checkout.
 
 ## Engine and reward
 
@@ -309,7 +316,7 @@ uv run ruff check dealroom tests
 npm --prefix web run build
 ```
 
-Tests cover authority and deadline boundaries, immutable revision/signature behavior, duplicate actions, limits, sample isolation, public-only observations, witness satisfiability, fixture/score consistency, and outcome classification without dropping failed or unfinished attempts. Reporting checks enforce the complete 96-attempt matrix and matching tool-emulation provenance. Frontend validation checks the scored-only pass-rate denominator, separate planned coverage, the no-score state, missing measurements, contradictory rewards, duplicate attempts, model/task references, and nested native-viewer links. The corrected v4 implementation passes 201 tests and Ruff checks. Tests exercise canonical unscored token, turn, message, time, and domain-action cutoffs, native-log round trips, aggregate exclusion, and valid outcomes at the final allowed action. Final browser verification and run totals are recorded after evaluation completes.
+Tests cover authority and deadline boundaries, immutable revision/signature behavior, duplicate actions, limits, sample isolation, public-only observations, witness satisfiability, fixture/score consistency, and outcome classification without dropping failed or unfinished attempts. Reporting checks enforce the complete 96-attempt matrix and matching tool-emulation provenance. Frontend validation checks the scored-only pass-rate denominator, separate planned coverage, the no-score state, missing measurements, contradictory rewards, duplicate attempts, model/task references, and nested native-viewer links. The corrected v4 benchmark implementation passed 201 tests and Ruff checks; subsequent learning and infrastructure work expanded the verified Python suite to 336 passing tests. Tests exercise canonical unscored token, turn, message, time, and domain-action cutoffs, native-log round trips, aggregate exclusion, and valid outcomes at the final allowed action. Final benchmark and learning totals are recorded in the linked reports and console exports.
 
 ## Interface reference
 
@@ -331,7 +338,7 @@ SilverKey's root manifest declares **UNLICENSED**, with no standalone LICENSE/CO
 | `Client/packages/features/checklists/components/roadmap/`, including `BuyerRoadmapChecklistItemCard.tsx` | Compact ordered state and evidence hierarchy, rebuilt with local React props and HTML/CSS; omit hooks, contexts and component packages. |
 | `Client/packages/features/documents/components/agreement/AgreementStatusBadge.tsx`, `AgreementDetailModal.tsx` | Original compact badges and document/signer detail composition; omit authentication, integrations, modal infrastructure and generated model imports. |
 
-Harness references: [Inspect agents](https://inspect.aisi.org.uk/agents.html), [tools](https://inspect.aisi.org.uk/tools.html), [native viewer](https://inspect.aisi.org.uk/log-viewer.html), and [task views](https://inspect.aisi.org.uk/task-views.html). APIs were checked against the installed pinned release. No second harness, speculative training adapter, or arbitrary React embedding in Inspect was added.
+Harness references: [Inspect agents](https://inspect.aisi.org.uk/agents.html), [tools](https://inspect.aisi.org.uk/tools.html), [native viewer](https://inspect.aisi.org.uk/log-viewer.html), and [task views](https://inspect.aisi.org.uk/task-views.html). APIs were checked against the installed pinned release. The benchmark and learning pipeline share Inspect as the agent harness; the React console reads exported results rather than embedding a second evaluation loop.
 
 ## Scope of the results
 
