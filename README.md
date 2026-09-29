@@ -4,11 +4,11 @@ A synthetic transaction environment for evaluating tool-using agents, with a res
 
 The current comparison, `dealroom-local-48-text-tools-v4`, runs **48 generated tasks through two downloaded local models: Qwen3 8B and Llama 3.1 8B, for 96 fresh planned attempts**. This is actual local inference through Inspect's native Ollama provider, with Inspect's built-in text tool emulation enabled identically for both models. Task prompts, tools, and emulation are unchanged from v3; the expanded episode and compute budgets are unchanged from v2. Version 4 corrects canonical scoring of operational cutoffs. The original six curated cases and eight scripted demonstrations remain available in the replay library and are excluded from model results.
 
-**Evaluation status:** v4 runs a matched 96-attempt matrix under the corrected scoring policy. Check the experiment ID and recorded progress in `web/public/benchmark.json` and the console; no final totals are asserted here. The v1 partial run, v2 native-tool diagnostic, and interrupted v3 run are archived separately, and none of their outcomes are merged into v4. Within each experiment, tasks, model digests, prompts, tools, tool-calling format, scoring policy, and limits are frozen; individual outcomes are not retried or selected away.
+**Evaluation status:** v4 is complete: Llama passed 1/46 scored attempts (2 limits); Qwen passed 13/32 (15 limits and 1 operator interruption). All 96 planned attempts are recorded. See the write-up outline below for coverage, interpretation, and the completed learning follow-up. The v1 partial run, v2 native-tool diagnostic, and interrupted v3 run are archived separately, and none of their outcomes are merged into v4. Within each experiment, tasks, model digests, prompts, tools, tool-calling format, scoring policy, and limits are frozen; individual outcomes are not retried or selected away.
 
 ## Llama failure investigation
 
-The first 16 completed Llama v4 attempts were audited against raw model requests and responses, parsed calls, public facts, and deterministic replay. Thirteen explicitly waited to contractual expiry; three finished without a valid disposition. None hit an Inspect limit or infrastructure error. All 119 tagged calls matched parsed calls. The public facts were sufficient to solve every audited case. See `reports/llama-v4-forensics.md` for the case table and evidence.
+The first 16 completed Llama v4 attempts were audited against raw model requests and responses, parsed calls, public facts, and deterministic replay. Thirteen explicitly waited to contractual expiry; three finished without a valid disposition. None hit an Inspect limit or infrastructure error. All 119 tagged calls matched parsed calls. The public facts were sufficient to solve every audited case. See `reports/llama-diagnosis.md` for the case table and evidence.
 
 Zero successful document or message reads did **not** mean zero evidence exposure: eight attempts received all current public resource bodies in failed-read responses. This inconsistent presentation is an interface weakness, but no evidence was dropped by transport. Seven expiry failures occurred after the seller facts had reached the model.
 
@@ -16,17 +16,106 @@ Six separate diagnostic trials tested two selected cases with clearer resource-r
 
 The six logs and two reports live under `logs/diagnostics/`; they are excluded from the model matrix. `uv run --extra openai python -m dealroom.diagnostics` reproduces the first two conditions on the selected cases; add `--conditions explicit_tool_semantics` for the follow-up condition. Run these only with exclusive access to Ollama. Each probe starts fresh and uses the unchanged task tools, engine, scorer, model digest, and numeric budgets. Only the declared public input supplement changes; no private witness is supplied. The first report inherits baseline configuration prose; its condition labels and recorded input supplements identify the actual ablations.
 
-The batch was temporarily interrupted for these diagnostics. Qwen `synth-044` is retained as an **incomplete, unscored operator interruption**, with its original log and measured serving context; it is not retried or counted as model failure. Canonical cancelled logs are now distinguished from genuine execution errors. The matched run resumes with its original frozen conditions.
+The batch was temporarily interrupted for these diagnostics. Qwen `synth-044` is retained as an **incomplete, unscored operator interruption**, with its original log and measured serving context; it is not retried or counted as model failure. Canonical cancelled logs are now distinguished from genuine execution errors. The matched run subsequently completed under its original frozen conditions.
 
 ## Local training experiment
 
 The separate learning pipeline compares the original workflow, a clarified
 workflow, a supervised LoRA checkpoint, and an environment-reward-trained
 checkpoint on the same MLX Llama 3.1 8B base. It uses 256 training scenarios,
-32 validation scenarios, and 64 sealed composition holdouts. The existing Ollama
-comparison continues independently. See [training/README.md](training/README.md)
+32 validation scenarios, and 64 sealed composition holdouts. The original Ollama
+comparison is complete and remains a separate experiment. See [training/README.md](training/README.md)
 for the protocol and reproduction commands. The **Training experiment** console
 tab reads live `learning.json`; pending stages have no invented scores.
+
+## Write-up outline: comparing two 8B agents, investigating failure, and attempting learning
+
+Suggested title: **Same model size, different execution reliability: a DealRoom case study**.
+
+The central result is a large observed gap in the original local comparison, followed by a small supervised gain and no measured additional RL gain. Distinguish recorded behavior from hypotheses about its cause. “First comparison” below means the first **completed matched comparison**, v4; earlier partial runs are methodological history, not additional samples.
+
+### 1. Question and environment
+
+- Ask whether two similarly sized local instruction-following models can complete multi-step transactions using the same tools and public information.
+- Explain the task: gather evidence, obtain authority, draft the correct revision, obtain its signatures, manage the deadline, commit proceed/cancel, and report the recorded outcome.
+- Explain the verifier: deterministic checks of actual state, authority, signatures, timing, and final claims. A plausible narrative or an unsigned agreement is insufficient. A private successful witness establishes that a case is solvable; it is never supplied to the evaluated agent.
+- Introduce 48 generated scenarios across eight families, six variants per family, one attempt per model/scenario. The original six curated cases and scripted demonstrations are excluded.
+
+### 2. Original comparison: setup and measured results
+
+Use experiment `dealroom-local-48-text-tools-v4`: Ollama 0.31.1, Inspect AI 0.3.271, Q4_K_M downloads of Llama 3.1 8B and Qwen3 8B, on an M4 Max with 36 GB RAM. Both use Inspect text-tool emulation, temperature 0, seed 20260927, thinking disabled, and identical task/tool/scorer settings. Exact downloaded digests are in [benchmark.json](web/public/benchmark.json).
+
+| Model | Successes / scored | Success rate | Scored / planned | Objective failures | Limits | Errors | Incomplete |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Llama 3.1 8B | 1 / 46 | 2.2% | 46 / 48 | 45 | 2 | 0 | 0 |
+| Qwen3 8B | 13 / 32 | 40.6% | 32 / 48 | 19 | 15 | 0 | 1 |
+
+**Interpretation:** Qwen completed more tasks successfully, but 40.6% versus 2.2% uses different scored subsets. Do not describe that ratio as a clean capability multiplier. Limits are unknown outcomes, not failures. Qwen's one incomplete attempt was an operator interruption during diagnosis. Twelve of its thirteen successes came from revised-credit execution and cancellation authority (six each); the remaining success was a partial-signature retry. Llama's one success was also in the retry family. The advantage was concentrated, not uniform across all task families.
+
+### 3. Why equal parameter counts did not imply equal performance
+
+- **Model size is not a controlled training history.** The models have different learned weights, architectures, tokenizers, and training recipes. Their model cards describe separate pretraining/post-training and instruction/agent capabilities; the “8B” label does not match those factors. Use the [Qwen3 model card](https://huggingface.co/Qwen/Qwen3-8B) and [Llama 3.1 model card](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) as background, not causal evidence for this experiment.
+- **Leading hypothesis: different reliability with this tool interface and action sequence.** Llama repeatedly confused requesting with executing, reporting with committing, and waiting for a response with advancing to the final deadline. These are observed mistakes; attributing them to a particular pretraining or post-training difference is unproven.
+- **Interface burden may amplify that difference.** Nested argument schemas, resource IDs, exact revisions, and recovery from rejected calls all matter. An identical interface controls exposure but need not be equally familiar to both models. Quantization, templates, and decoding remain possible contributors; no precision or alternative-template ablation isolated them. Qwen's result cannot be attributed to enabled thinking: it was disabled in this run.
+- **Whole-task scoring amplifies a missed final step.** Correct arithmetic and even a signed amendment still receive zero if the agent never commits a valid disposition. Illustrate with an actual trajectory rather than describing Llama as unable to understand every part of the task.
+
+### 4. Investigate the harness before blaming the model
+
+Audit the first 16 completed Llama v4 failures against raw requests/responses, parsed calls, public evidence, and deterministic replay:
+
+| Check | Recorded finding | What it supports |
+| --- | --- | --- |
+| Terminal cause | 13 explicit waits to contractual expiry; 3 premature finishes | These audited failures were objective outcomes, not compute timeouts. |
+| Call transport | All 119 tagged calls matched parsed calls | No dropped or altered calls found in this audit. |
+| Public facts | A public-information-only planner solved all 16 | Essential facts were available; actual model retrieval still mattered. |
+| Evidence exposure | 8 received full public bodies through failed-read responses; 7 expiry failures occurred after seller facts were exposed | Zero successful reads did not mean zero evidence exposure. |
+| Scorer replay | No acceptable completed disposition was incorrectly rejected | No demonstrated false failure in these 16; this is not proof that every component is defect-free. |
+
+Include concrete examples: `synth-020` computed the correct credit but routed the old revision; `synth-025` waited to expiry without executing the required extension. Also disclose the real harness weakness: failed reads could expose more public information than successful selected-resource reads. Do not present the investigation as finding a perfectly clean interface.
+
+### 5. Remedies, in order, and what each tested
+
+1. **Expand budgets and separate cutoff from failure.** Preserve the early partial v1 run; conduct an expanded native-tool v2 diagnostic; use shared text-tool emulation in v3; correct unfinished/limited samples to canonical unscored outcomes in v4. Keep runs separate rather than pooling favorable results. Final matched budgets: 40,960-token context; history trimming at 28,672; 2,048 output tokens per generation; 2,000,000 cumulative tokens; 128 turns; 512 messages; 900 seconds; 256 domain actions. Contractual expiry remains an objective failure, distinct from any compute limit.
+2. **Run six isolated interface probes.** On `synth-007` and `synth-025`, try clearer resource-read instructions, public evidence supplied upfront, and then explicit tool-effect instructions. Hold weights, engine, scorer, tools, and numeric budgets fixed. All six failed objectively, without compute cutoffs. Clearer reads nevertheless produced a fully signed correct credit on `synth-007`; the agent then omitted `set_disposition`. Supplying evidence alone did not solve execution.
+3. **Create a separate clarified workflow.** Explain resource IDs, integer cents, exact-revision execution, waiting to intermediate response times, verifying accepted receipts, and `set_disposition` versus `finish`. Normalize rejected-read observations to the public resource index. Preserve the original adapter and benchmark. See [learning_task.py](dealroom/learning_task.py).
+4. **Freeze a new learning experiment.** Use 256 training cases, 32 validation cases, and 64 sealed composition holdouts, excluding the original 48 investigated cases. Use one pinned MLX Llama checkpoint for all four learning conditions. MLX 4-bit differs from Ollama Q4_K_M, so do not compare their percentages as a continuous before/after series.
+5. **Supervised fine-tuning (SFT).** Export successful scripted trajectories into the actual inference wire format: 3,064 training decision rows and 380 validation rows. Train final-assistant-completion loss for 128 Adam updates, batch size 1, learning rate `2e-5`, rank-8 LoRA on query/value projections in the final eight layers (851,968 trainable parameters). Select the fixed final checkpoint. This was a short pilot, not an epoch over all 3,064 rows. See [learning_data.py](dealroom/learning_data.py) and [learning_train.py](dealroom/learning_train.py).
+6. **Repair training infrastructure without changing the experiment objective.** Archive the failed v1 memory preflight. In v2, bound attention/feed-forward gradient memory with 256-token blocks, materialize layer gradients sequentially, and compute the frozen prefix outside autodiff. Preserve context and targets; verify gradients and full 24,576-token SFT/policy stress runs. Later repair owned-child shutdown after the SFT server failed to exit, archive the exact implementation amendment, and resume from saved receipts/checkpoints without discarding attempts. These repairs enabled execution; they were not capability improvements.
+7. **Environment-reward learning.** Start from SFT. Run eight prescribed groups of four fresh stochastic trajectories, one training case per group: 32 rollouts on eight unique cases. Use population-standardized group-relative REINFORCE, temperature 1, learning rate `1e-6`, exact sampled token IDs, and one accumulated update per nonconstant-reward group. Train on binary success plus a bounded semantic state-progress term (maximum potential 0.2); keep evaluation binary. Six groups produced updates; two equal-reward groups skipped. The conditional eight extra groups required fewer than two updates, so they did not trigger. This implementation is not PPO. See [learning_policy.py](dealroom/learning_policy.py).
+8. **Freeze checkpoints, then evaluate once.** Complete validation before opening the sealed set. Evaluate all four conditions under common learning budgets, including 1,800 seconds per attempt, 128 turns, 512 messages, 2 million cumulative tokens, and 256 actions. Preserve errors and limits as unscored. Verify adapter identities and export receipts/results. The run completed September 28, 2026 at 23:39 UTC. See [protocol.json](training/experiment-v2/protocol.json) and [learning results](reports/learning-results.md).
+
+### 6. Did the remedies help?
+
+| Learning condition (same MLX base) | Validation successes / scored | Held-out successes / scored | Held-out scored / planned |
+| --- | ---: | ---: | ---: |
+| Original workflow | 0 / 32 | 0 / 64 | 64 / 64 |
+| Clarified workflow | 1 / 32 | 0 / 39 | 39 / 64 |
+| Clarified + SFT | 2 / 32 | 2 / 64 | 64 / 64 |
+| Clarified + SFT + RL | 2 / 32 | 2 / 64 | 64 / 64 |
+
+The clarified-workflow held-out condition had **25 execution errors**, excluded from scoring; it cannot support a full-coverage workflow comparison. SFT and RL had complete scored coverage and passed the **same two held-out cases**, both 3.125%. SFT validation completion loss decreased from approximately 0.333 to 0.060, but this translated into little whole-task success. The RL training rollouts produced 4 successes out of 32; that is training data on repeated cases, not a held-out improvement estimate.
+
+### 7. Why the learning attempt might have failed to improve results
+
+Label these explanations as hypotheses consistent with the records, not established causes:
+
+| Possible explanation | Supporting observation | What remains unproven |
+| --- | --- | --- |
+| Too little optimization or coverage | 128 SFT updates; only 6 RL updates on 8 unique cases | Whether more steps, broader cases, or different adapter capacity would improve transfer. Long wall time did not mean a large training run. |
+| Learning demonstrated actions without recovering from its own mistakes | Completion loss fell substantially while task passes remained rare | Whether examples of rejected calls and recovery would close the gap. |
+| Weak or misaligned training signal | Only 4 successful RL rollouts; two groups had identical rewards; other groups could learn from small progress differences | Whether shaping rewarded useful partial progress without improving final completion. |
+| Composition and sequence difficulty | Sealed cases combine dependencies absent from training/validation families; success requires every necessary step | Which dependencies explain the final failures; that requires a separate trajectory analysis. |
+| Persistent interface/model mismatch | Selected probes improved intermediate behavior but all still failed | Whether a different action interface, template, precision, or model would solve it. |
+
+Do not claim that RL cannot work, that Llama is intrinsically incapable, or that more training is guaranteed to work. The defensible result is narrower: **this fixed, small training protocol produced no additional held-out task-success gain over SFT**. One training seed, one synthetic suite, related case templates, and incomplete workflow coverage limit broader conclusions. The test set is now opened; further tuning must use development data and a new untouched test set for a fresh confirmatory claim.
+
+### 8. Evidence to include in the eventual full write-up
+
+Use the original per-model and per-family tables, one annotated Llama failure/repaired-intermediate trajectory, the intervention chronology, SFT loss alongside actual task success, and the final paired SFT/RL outcomes. Link every quantitative claim to the [original benchmark export](web/public/benchmark.json), [native benchmark logs](logs/benchmark/dealroom-local-48-text-tools-v4/), [interface probe reports](logs/diagnostics/), and [per-attempt learning results](reports/learning-attempts.csv). Keep observations, proposed explanations, and future experiments visibly distinct.
+
+## Repository results and local artifacts
+
+The completed [model comparison](reports/model-comparison.md), [Llama investigation](reports/llama-diagnosis.md), [learning results](reports/learning-results.md), and [per-attempt learning records](reports/learning-attempts.csv) are included in this repository. The console JSON exports are also included. Downloaded model weights, adapters, raw native logs, generated training data, and machine-specific experiment state remain local and are excluded from Git. Links to `logs/` and local Inspect viewers require those local artifacts; they will not open from a fresh GitHub checkout. See [training/README.md](training/README.md) for reproduction.
 
 ## Open the console
 
